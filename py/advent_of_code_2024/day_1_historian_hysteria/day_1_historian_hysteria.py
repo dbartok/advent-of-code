@@ -1,5 +1,6 @@
 import textwrap
 import unittest
+from collections import Counter
 
 
 def solve_part_one(puzzle_input):
@@ -9,6 +10,28 @@ def solve_part_one(puzzle_input):
     :param puzzle_input: The input data as string
     :return: Solution for part one
     """
+    first_list, second_list = parse_puzzle_input(puzzle_input)
+    return sum(abs(a - b) for a, b in zip(first_list, second_list))
+
+
+def solve_part_two(puzzle_input):
+    """
+    Solve part two of the Advent of Code puzzle.
+
+    :param puzzle_input: The input data as string
+    :return: Solution for part two
+    """
+    first_list, second_list = parse_puzzle_input(puzzle_input)
+    second_list_counter = Counter(second_list)
+
+    similarity_score = 0
+    for n in first_list:
+        similarity_score += second_list_counter[n] * n
+
+    return similarity_score
+
+
+def parse_puzzle_input(puzzle_input):
     lines = puzzle_input.split("\n")
 
     first_list = []
@@ -23,17 +46,7 @@ def solve_part_one(puzzle_input):
     first_list.sort()
     second_list.sort()
 
-    return sum(abs(a - b) for a, b in zip(first_list, second_list))
-
-
-def solve_part_two(puzzle_input):
-    """
-    Solve part two of the Advent of Code puzzle.
-
-    :param puzzle_input: The input data as string
-    :return: Solution for part two
-    """
-    pass
+    return first_list, second_list
 
 
 def main():
@@ -48,20 +61,22 @@ def main():
 
 
 class TestAdventOfCode(unittest.TestCase):
+    PUZZLE_INPUT = textwrap.dedent("""
+        3   4
+        4   3
+        2   5
+        1   3
+        3   9
+        3   3
+    """).strip()
+
     def test_part_one(self):
-        puzzle_input = textwrap.dedent("""
-            3   4
-            4   3
-            2   5
-            1   3
-            3   9
-            3   3
-        """).strip()
         expected_output = 11
-        self.assertEqual(solve_part_one(puzzle_input), expected_output)
+        self.assertEqual(solve_part_one(self.PUZZLE_INPUT), expected_output)
 
     def test_part_two(self):
-        pass
+        expected_output = 31
+        self.assertEqual(solve_part_two(self.PUZZLE_INPUT), expected_output)
 
 
 if __name__ == "__main__":
