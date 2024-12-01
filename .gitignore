@@ -37,3 +37,9 @@
 Debug/
 Release/
 Test/
+
+# Python
+*.pyc
+
+# PyCharm
+.idea
