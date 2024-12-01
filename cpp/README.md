@@ -1,7 +1,22 @@
-# Visual Studio Project Template
-The project template allows to easily create a new VS project for each day's programming puzzle. These projects can then be collected in a VS solution.
+# Advent of Code: C++ solutions
 
-The template was (most recently) tested with Visual Studio 2022.
+This folder contains solutions to the Advent of Code puzzles between 2017 and 2023 in C++.
+
+## Libraries
+
+Some solutions use one or more of the following libraries:  
+- [boost](http://www.boost.org/)  
+- [eigen3](http://eigen.tuxfamily.org/)  
+
+An easy way to install these locally is with [vcpkg](https://github.com/Microsoft/vcpkg):  
+`vcpkg install <library name>:<platform>`  
+e.g., `vcpkg install boost:x86-windows` or `vcpkg install eigen3:x64-windows`
+
+## Visual Studio Project Template
+
+In order to easily create a new VS project for each day's programming puzzle, you can use the project template from the "Visual Studio Project Template" folder. These projects can then be collected in a VS solution.
+
+The template was most recently tested with Visual Studio 2022.
 
 The template contains a set of placeholder files, and three configurations:
 - The Debug and Release configurations are standard, and are used to run the application.
@@ -9,7 +24,7 @@ The template contains a set of placeholder files, and three configurations:
 
 All three of these configurations are supported for both x86 and x64 platforms.
 
-## To use the template:
+To use the template:
 1. Go into the AdventOfCode folder and add the contents to a zip file called `AdventOfCode.zip`.
 2. Move `AdventOfCode.zip` to the root VS ProjectTemplates directory, its default path is:
 `C:\Users\<Your username>\Documents\Visual Studio <Your VS version>\Templates\ProjectTemplates`.
@@ -29,7 +44,7 @@ In order to keep the coding style consistent, the Visual Studio C++ Text Editor 
 ## Warnings & Code Analysis
 All warnings are enabled (/Wall) along with extensive Code Analysis (Microsoft All Rules and also Core C++ Check).
 
-### Ignoring warnings in libraries
+## Ignoring warnings in libraries
 
 The standard library and other libraries produce several externally unfixable warnings when compiled with /Wall. We are also not interested in the Code Analysis warning messages for libraries.
 Unfortunately, there is currently no easy way in VS to disable warning messages for all external libraries.
