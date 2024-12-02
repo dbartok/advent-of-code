@@ -9,7 +9,7 @@ def solve_part_one(puzzle_input):
     :param puzzle_input: The input data as string
     :return: Solution for part one
     """
-    reports = [list(map(int, line.split())) for line in puzzle_input.split('\n')]
+    reports = parse_puzzle_input(puzzle_input)
     return len([report for report in reports if is_safe(report)])
 
 
@@ -20,12 +20,22 @@ def solve_part_two(puzzle_input):
     :param puzzle_input: The input data as string
     :return: Solution for part two
     """
-    pass
+    reports = parse_puzzle_input(puzzle_input)
+    return len([report for report in reports if is_safe_with_problem_dampener(report)])
+
+
+def parse_puzzle_input(puzzle_input):
+    return [list(map(int, line.split())) for line in puzzle_input.split('\n')]
 
 
 def is_safe(report):
     differences = [report[i + 1] - report[i] for i in range(len(report) - 1)]
     return all(1 <= d <= 3 for d in differences) or all(-3 <= d <= -1 for d in differences)
+
+
+def is_safe_with_problem_dampener(report):
+    reports_with_one_element_removed = [report[:i] + report[i + 1:] for i in range(len(report))]
+    return any(is_safe(report) for report in reports_with_one_element_removed)
 
 
 def main():
@@ -40,20 +50,22 @@ def main():
 
 
 class TestAdventOfCode(unittest.TestCase):
+    PUZZLE_INPUT = textwrap.dedent("""
+        7 6 4 2 1
+        1 2 7 8 9
+        9 7 6 2 1
+        1 3 2 4 5
+        8 6 4 4 1
+        1 3 6 7 9
+    """).strip()
+
     def test_part_one(self):
-        puzzle_input = textwrap.dedent("""
-            7 6 4 2 1
-            1 2 7 8 9
-            9 7 6 2 1
-            1 3 2 4 5
-            8 6 4 4 1
-            1 3 6 7 9
-        """).strip()
         expected_output = 2
-        self.assertEqual(solve_part_one(puzzle_input), expected_output)
+        self.assertEqual(solve_part_one(self.PUZZLE_INPUT), expected_output)
 
     def test_part_two(self):
-        pass
+        expected_output = 4
+        self.assertEqual(solve_part_two(self.PUZZLE_INPUT), expected_output)
 
 
 if __name__ == "__main__":
