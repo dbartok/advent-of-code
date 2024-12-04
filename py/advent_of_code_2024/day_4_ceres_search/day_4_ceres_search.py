@@ -22,7 +22,9 @@ def solve_part_two(puzzle_input):
     :param puzzle_input: The input data as string
     :return: Solution for part two
     """
-    pass
+    grid = puzzle_input.splitlines()
+    word_search = XShapeWordSearch(grid, "MAS")
+    return word_search.get_count()
 
 
 class WordSearch:
@@ -32,27 +34,27 @@ class WordSearch:
         Vector(-1, 0),  # Left (horizontal)
         Vector(1, 0),  # Right (horizontal)
         Vector(0, 1),  # Down (vertical)
-        Vector(1, 1),  # Bottom-Right Diagonal
-        Vector(1, -1),  # Bottom-Left Diagonal
+        Vector(-1, -1),  # Top-Left Diagonal
         Vector(-1, 1),  # Top-Right Diagonal
-        Vector(-1, -1)  # Top-Left Diagonal
+        Vector(1, -1),  # Bottom-Left Diagonal
+        Vector(1, 1),  # Bottom-Right Diagonal
     ]
 
     def __init__(self, grid, target_word):
-        self.grid = grid
-        self.target_word = target_word
+        self._grid = grid
+        self._target_word = target_word
 
-        self.height = len(grid)
-        self.width = len(grid[0])
+        self._height = len(grid)
+        self._width = len(grid[0])
 
     def get_count(self):
-        start_positions = [(x, y) for y in range(self.height) for x in range(self.width)]
+        start_positions = [(x, y) for y in range(self._height) for x in range(self._width)]
         count = 0
 
         for (x, y) in start_positions:
             for direction_delta in self.DIRECTIONS:
                 word_in_direction = self._get_word_in_direction(Vector(x, y), direction_delta)
-                if word_in_direction == self.target_word:
+                if word_in_direction == self._target_word:
                     count += 1
 
         return count
@@ -61,13 +63,47 @@ class WordSearch:
         position = start_position
         word = []
 
-        for i in range(len(self.target_word)):
-            if not (0 <= position.x < self.width and 0 <= position.y < self.height):
+        for i in range(len(self._target_word)):
+            if not (0 <= position.x < self._width and 0 <= position.y < self._height):
                 return ""
-            word.append(self.grid[int(position.y)][int(position.x)])
+            word.append(self._grid[int(position.y)][int(position.x)])
             position += direction_delta
 
         return ''.join(word)
+
+
+class XShapeWordSearch(WordSearch):
+    def get_count(self):
+        center_positions = [(x, y) for y in range(1, self._height - 1) for x in range(1, self._width - 1)]
+        assert len(self._target_word) == 3
+        start_char = self._target_word[0]
+        center_char = self._target_word[1]
+        end_char = self._target_word[2]
+        count = 0
+
+        for (x, y) in center_positions:
+            if self._grid[y][x] != center_char:
+                continue
+
+            top_left = self._grid[y - 1][x - 1]
+            top_right = self._grid[y - 1][x + 1]
+            bottom_left = self._grid[y + 1][x - 1]
+            bottom_right = self._grid[y + 1][x + 1]
+            corner_characters = [
+                top_left,
+                top_right,
+                bottom_left,
+                bottom_right
+            ]
+
+            if (
+                    corner_characters.count(start_char) == 2
+                    and corner_characters.count(end_char) == 2
+                    and top_left != bottom_right
+            ):
+                count += 1
+
+        return count
 
 
 def main():
@@ -82,8 +118,7 @@ def main():
 
 
 class TestAdventOfCode(unittest.TestCase):
-    def test_part_one(self):
-        puzzle_input = textwrap.dedent("""
+    PUZZLE_INPUT = textwrap.dedent("""
             MMMSXXMASM
             MSAMXMSMSA
             AMXSXMAAMM
@@ -95,11 +130,14 @@ class TestAdventOfCode(unittest.TestCase):
             MAMMMXMMMM
             MXMXAXMASX
         """).strip()
+
+    def test_part_one(self):
         expected_output = 18
-        self.assertEqual(solve_part_one(puzzle_input), expected_output)
+        self.assertEqual(solve_part_one(self.PUZZLE_INPUT), expected_output)
 
     def test_part_two(self):
-        pass
+        expected_output = 9
+        self.assertEqual(solve_part_two(self.PUZZLE_INPUT), expected_output)
 
 
 if __name__ == "__main__":
