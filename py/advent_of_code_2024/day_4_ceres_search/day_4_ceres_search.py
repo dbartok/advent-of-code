@@ -133,11 +133,11 @@ class TestAdventOfCode(unittest.TestCase):
 
     def test_part_one(self):
         expected_output = 18
-        self.assertEqual(solve_part_one(self.PUZZLE_INPUT), expected_output)
+        self.assertEqual(expected_output, solve_part_one(self.PUZZLE_INPUT))
 
     def test_part_two(self):
         expected_output = 9
-        self.assertEqual(solve_part_two(self.PUZZLE_INPUT), expected_output)
+        self.assertEqual(expected_output, solve_part_two(self.PUZZLE_INPUT))
 
 
 if __name__ == "__main__":

@@ -39,7 +39,7 @@ class TestAdventOfCode(unittest.TestCase):
             test input
         """).strip()
         expected_output = "expected output"
-        self.assertEqual(solve_part_one(puzzle_input), expected_output)
+        self.assertEqual(expected_output, solve_part_one(puzzle_input))
 
     def test_part_two(self):
         pass
