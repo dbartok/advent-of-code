@@ -11,7 +11,7 @@ def solve_part_one(puzzle_input):
     :return: Solution for part one
     """
     equations = parse_input(puzzle_input)
-    solver = CalibrationEquationSolver(equations)
+    solver = CalibrationEquationSolver(equations, ['+', '*'])
     return solver.find_valid_equations()
 
 
@@ -22,7 +22,9 @@ def solve_part_two(puzzle_input):
     :param puzzle_input: The input data as string
     :return: Solution for part two
     """
-    pass
+    equations = parse_input(puzzle_input)
+    solver = CalibrationEquationSolver(equations, ['+', '*', '||'])
+    return solver.find_valid_equations()
 
 
 def parse_input(puzzle_input):
@@ -36,31 +38,39 @@ def parse_input(puzzle_input):
 
 
 class CalibrationEquationSolver:
-    def __init__(self, equations):
-        self.equations = equations  # List of tuples, each containing (test_value, numbers)
+    def __init__(self, equations, operators):
+        self._equations = equations  # List of tuples, each containing (test_value, numbers)
+        self._operators = operators  # List of operators (e.g., ['+', '*', '||'])
 
     def find_valid_equations(self):
         sum_of_valid_test_values = 0
 
-        for test_value, numbers in self.equations:
+        for test_value, numbers in self._equations:
             num_operators = len(numbers) - 1
-            operator_combinations = itertools.product(['+', '*'], repeat=num_operators)
+            operator_combinations = itertools.product(self._operators, repeat=num_operators)
 
-            for operator_combination in operator_combinations:
-                if self._evaluate_expression(numbers, operator_combination) == test_value:
-                    sum_of_valid_test_values += test_value
-                    break  # Stop after finding a valid solution for this equation
+            if any(
+                    CalibrationEquationSolver._evaluate_expression(numbers, operator_combination) == test_value
+                    for operator_combination in operator_combinations
+            ):
+                sum_of_valid_test_values += test_value
 
         return sum_of_valid_test_values
 
     @staticmethod
     def _evaluate_expression(numbers, operators):
         result = numbers[0]
+
         for i in range(1, len(numbers)):
-            if operators[i - 1] == '+':
+            operator = operators[i - 1]
+
+            if operator == '+':
                 result += numbers[i]
-            elif operators[i - 1] == '*':
+            elif operator == '*':
                 result *= numbers[i]
+            elif operator == '||':
+                result = int(str(result) + str(numbers[i]))
+
         return result
 
 
@@ -76,23 +86,25 @@ def main():
 
 
 class TestAdventOfCode(unittest.TestCase):
+    PUZZLE_INPUT = textwrap.dedent("""
+        190: 10 19
+        3267: 81 40 27
+        83: 17 5
+        156: 15 6
+        7290: 6 8 6 15
+        161011: 16 10 13
+        192: 17 8 14
+        21037: 9 7 18 13
+        292: 11 6 16 20
+    """).strip()
+
     def test_part_one(self):
-        puzzle_input = textwrap.dedent("""
-            190: 10 19
-            3267: 81 40 27
-            83: 17 5
-            156: 15 6
-            7290: 6 8 6 15
-            161011: 16 10 13
-            192: 17 8 14
-            21037: 9 7 18 13
-            292: 11 6 16 20
-        """).strip()
         expected_output = 3749
-        self.assertEqual(expected_output, solve_part_one(puzzle_input))
+        self.assertEqual(expected_output, solve_part_one(self.PUZZLE_INPUT))
 
     def test_part_two(self):
-        pass
+        expected_output = 11387
+        self.assertEqual(expected_output, solve_part_two(self.PUZZLE_INPUT))
 
 
 if __name__ == "__main__":
