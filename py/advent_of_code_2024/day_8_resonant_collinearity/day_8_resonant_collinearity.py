@@ -26,7 +26,10 @@ def solve_part_two(puzzle_input):
     :param puzzle_input: The input data as string
     :return: Solution for part two
     """
-    pass
+    grid = puzzle_input.splitlines()
+    antenna_map = ResonantAntennaMap(grid)
+    antenna_map.calculate_antinode_positions()
+    return antenna_map.get_unique_antinode_count()
 
 
 class AntennaMap:
@@ -42,11 +45,7 @@ class AntennaMap:
             self._process_antenna_pairs(positions)
 
     def get_unique_antinode_count(self):
-        valid_antinode_positions = {
-            (x, y) for x, y in self._antinode_positions
-            if 0 <= x < self._width and 0 <= y < self._height
-        }
-        return len(valid_antinode_positions)
+        return len(self._antinode_positions)
 
     def _parse_antenna_positions(self):
         positions = defaultdict(list)
@@ -61,19 +60,43 @@ class AntennaMap:
     def _process_antenna_pairs(self, positions):
         [
             self._antinode_positions.update(
-                [(antinode1_position.x, antinode1_position.y), (antinode2_position.x, antinode2_position.y)]
+                [(antinode_position.x, antinode_position.y) for antinode_position in
+                 self._calculate_antinode_positions(antenna1_position, antenna2_position)]
             )
             for antenna1_position, antenna2_position in itertools.combinations(positions, 2)
-            for antinode1_position, antinode2_position in
-            [self._calculate_antinode_positions(antenna1_position, antenna2_position)]
         ]
 
     def _calculate_antinode_positions(self, antenna1_position, antenna2_position):
         delta = antenna1_position - antenna2_position
-        antinode1_position = antenna1_position + delta
-        antinode2_position = antenna2_position - delta
+        antinode_positions = [
+            antenna1_position + delta,
+            antenna2_position - delta
+        ]
+        return [antinode for antinode in antinode_positions if self._is_within_bounds(antinode)]
 
-        return Vector(antinode1_position.x, antinode1_position.y), Vector(antinode2_position.x, antinode2_position.y)
+    def _is_within_bounds(self, position):
+        return 0 <= position.x < self._width and 0 <= position.y < self._height
+
+
+class ResonantAntennaMap(AntennaMap):
+    def _calculate_antinode_positions(self, antenna1_position, antenna2_position):
+        delta = antenna1_position - antenna2_position
+        antinode_positions = []
+
+        antinode_positions.extend(self._get_antinode_positions_in_direction(antenna1_position, delta, 1))
+        antinode_positions.extend(self._get_antinode_positions_in_direction(antenna2_position, delta, -1))
+
+        return antinode_positions
+
+    def _get_antinode_positions_in_direction(self, start_position, delta, direction):
+        antinode_positions = []
+        delta_multiplier = 0
+
+        while self._is_within_bounds(position := start_position + delta * direction * delta_multiplier):
+            antinode_positions.append(position)
+            delta_multiplier += 1
+
+        return antinode_positions
 
 
 def main():
@@ -88,26 +111,28 @@ def main():
 
 
 class TestAdventOfCode(unittest.TestCase):
+    PUZZLE_INPUT = textwrap.dedent("""
+        ............
+        ........0...
+        .....0......
+        .......0....
+        ....0.......
+        ......A.....
+        ............
+        ............
+        ........A...
+        .........A..
+        ............
+        ............
+    """).strip()
+
     def test_part_one(self):
-        puzzle_input = textwrap.dedent("""
-            ............
-            ........0...
-            .....0......
-            .......0....
-            ....0.......
-            ......A.....
-            ............
-            ............
-            ........A...
-            .........A..
-            ............
-            ............
-        """).strip()
         expected_output = 14
-        self.assertEqual(expected_output, solve_part_one(puzzle_input))
+        self.assertEqual(expected_output, solve_part_one(self.PUZZLE_INPUT))
 
     def test_part_two(self):
-        pass
+        expected_output = 34
+        self.assertEqual(expected_output, solve_part_two(self.PUZZLE_INPUT))
 
 
 if __name__ == "__main__":
