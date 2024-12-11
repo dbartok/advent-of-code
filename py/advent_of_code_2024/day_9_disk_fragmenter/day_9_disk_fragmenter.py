@@ -35,8 +35,6 @@ class DiskCompactor:
         self._new_disk_layout = []
 
     def compact(self):
-        self._new_disk_layout.clear()
-
         # Start by placing the first file
         self._new_disk_layout.append((0, self._file_sizes[0]))
 
@@ -96,37 +94,46 @@ class DiskCompactor:
 
 
 class WholeFileDiskCompactor(DiskCompactor):
+    def __init__(self, disk_map: str):
+        super().__init__(disk_map)
+        self._file_ids_in_new_order = list(range(0, len(self._file_sizes)))
+
     def compact(self):
-        self._new_disk_layout.clear()
+        # Iterate files in reverse order (starting with the highest file ID) and move if possible
+        for file_id in range(len(self._file_sizes) - 1, -1, -1):
+            self._move_file_id_if_possible(file_id)
 
-        file_id_order = list(range(0, len(self._file_sizes)))
-
-        # Iterate files in reverse order (starting with the highest file ID)
-        for file_index in range(len(self._file_sizes) - 1, -1, -1):
-            file_size = self._file_sizes[file_index]
-
-            # Try to find a span of free space that can fit the current file
-            for space_index in range(len(self._space_sizes)):
-                space_size = self._space_sizes[space_index]
-
-                # If the space can fit the file, move the file to this space
-                if space_size >= file_size:
-                    self._space_sizes[space_index] -= file_size
-                    self._space_sizes.insert(space_index, 0)
-
-                    combined_space_size = self._space_sizes[file_index - 1] + file_size + self._space_sizes[file_index]
-                    del self._space_sizes[file_index]
-                    self._space_sizes[file_index - 1] = combined_space_size
-
-                    file_id_order.remove(file_index)
-                    file_id_order.insert(space_index + 1, file_index)
-
-                    break
-
-        # Iterate through both lists to create tuples
-        for file_size, space_size, file_id in zip(self._file_sizes, self._space_sizes, file_id_order):
-            self._new_disk_layout.append((file_id, file_size))  # Add file
+        # Create new disk layout
+        for space_size, file_id in zip(self._space_sizes, self._file_ids_in_new_order):
+            self._new_disk_layout.append((file_id, self._file_sizes[file_id]))  # Add file
             self._new_disk_layout.append((0, space_size))  # Add space with ID 0
+
+    def _move_file_id_if_possible(self, file_id):
+        file_size = self._file_sizes[file_id]
+        num_extra_spaces_before_file = self._file_ids_in_new_order.index(file_id) - file_id
+        file_index_adjusted_with_extra_spaces = file_id + num_extra_spaces_before_file
+        # Try to find a span of free space that can fit the current file
+        for space_index in range(file_index_adjusted_with_extra_spaces):
+            space_size = self._space_sizes[space_index]
+
+            # If the space can fit the file, move the file to this space
+            if space_size >= file_size:
+                # Adjust spaces at origin of move
+                combined_space_size = (self._space_sizes[file_index_adjusted_with_extra_spaces - 1] +
+                                       file_size +
+                                       self._space_sizes[file_index_adjusted_with_extra_spaces])
+                del self._space_sizes[file_index_adjusted_with_extra_spaces]
+                self._space_sizes[file_index_adjusted_with_extra_spaces - 1] = combined_space_size
+
+                # Adjust spaces at destination of move
+                self._space_sizes[space_index] -= file_size
+                self._space_sizes.insert(space_index, 0)
+
+                # Adjust file ID order
+                self._file_ids_in_new_order.remove(file_id)
+                self._file_ids_in_new_order.insert(space_index + 1, file_id)
+
+                break
 
 
 def main():
