@@ -1,8 +1,7 @@
 import textwrap
 import unittest
 import re
-import math
-import numpy as np
+import sympy as sp
 
 
 def solve_part_one(puzzle_input):
@@ -13,13 +12,7 @@ def solve_part_one(puzzle_input):
     :return: Solution for part one
     """
     machines = parse_input(puzzle_input)
-
-    return sum(
-        3 * A + B
-        for machine in machines
-        if (solution := machine.solve_equation()) is not None
-        for A, B in [solution]
-    )
+    return get_num_tokens_spent_to_win_all_prizes(machines)
 
 
 def solve_part_two(puzzle_input):
@@ -29,7 +22,12 @@ def solve_part_two(puzzle_input):
     :param puzzle_input: The input data as string
     :return: Solution for part two
     """
-    pass
+    machines = parse_input(puzzle_input)
+
+    for machine in machines:
+        machine.apply_prize_offset(10000000000000)
+
+    return get_num_tokens_spent_to_win_all_prizes(machines)
 
 
 class ClawMachine:
@@ -53,58 +51,27 @@ class ClawMachine:
         self.p_x = p_x
         self.p_y = p_y
 
+    def apply_prize_offset(self, offset):
+        self.p_x += offset
+        self.p_y += offset
+
     def solve_equation(self):
-        """
-        The system of equations is:
-        a_x * A + b_x * B = p_x
-        a_y * A + b_y * B = p_y
+        # Define symbols for the button presses A and B
+        A, B = sp.symbols('A B')
 
-        We solve for A and B.
+        # Define the Diophantine equation for both axes
+        eq_x = self.a_x * A + self.b_x * B - self.p_x
+        eq_y = self.a_y * A + self.b_y * B - self.p_y
 
-        Returns:
-        A tuple with the solution in the form of (A, B) if a valid solution exists,
-        otherwise returns None if there is no integer solution.
-        """
-        # Coefficients matrix (M)
-        # M is a 2x2 matrix that represents the system of linear equations.
-        # It holds the coefficients for A and B in the following format:
-        #
-        # M = | a_x  b_x |
-        #     | a_y  b_y |
-        M = np.array([[self.a_x, self.b_x], [self.a_y, self.b_y]])
+        # Solve the system of equations
+        solutions = sp.solve((eq_x, eq_y), (A, B))
 
-        # Constants vector (p)
-        # p is a 2x1 vector that holds the constants on the right-hand side of the equations.
-        # It represents the target coordinates of the prize:
-        #
-        # p = | p_x |
-        #     | p_y |
-        p = np.array([self.p_x, self.p_y])
+        # Check if a valid solution was found
+        if solutions and solutions[A].is_integer and solutions[B].is_integer:
+            return int(solutions[A]), int(solutions[B])
 
-        # Compute the determinant of M
-        # The determinant tells us whether the system has a unique solution.
-        # If the determinant is zero, the system has either no solution or infinite solutions.
-        # If the determinant is non-zero, the system has a unique solution.
-        det = np.linalg.det(M)
-
-        if det == 0:
-            return None
-
-        # Compute the inverse of the matrix M
-        # If the determinant is non-zero, we can safely calculate the inverse of M.
-        M_inv = np.linalg.inv(M)
-
-        # M_inv * p gives us the solution to the system of equations.
-        # The resulting vector will contain the values of A and B
-        solution = np.dot(M_inv, p)
-        A, B = solution
-
-        # Check if the values are close enough to integers, allowing for small floating-point errors
-        if math.isclose(A, round(A)) and math.isclose(B, round(B)):
-            return int(round(A)), int(round(B))
-        else:
-            # No valid integer solution
-            return None
+        # Return None if no valid solution is found
+        return None
 
 
 def parse_input(puzzle_input):
@@ -126,6 +93,15 @@ def parse_input(puzzle_input):
     return machines
 
 
+def get_num_tokens_spent_to_win_all_prizes(machines):
+    return sum(
+        3 * A + B
+        for machine in machines
+        if (solution := machine.solve_equation()) is not None
+        for A, B in [solution]
+    )
+
+
 def main():
     with open("./input.txt") as f:
         puzzle_input = f.read().strip()
@@ -138,29 +114,31 @@ def main():
 
 
 class TestAdventOfCode(unittest.TestCase):
-    def test_part_one(self):
-        puzzle_input = textwrap.dedent("""
+    PUZZLE_INPUT = textwrap.dedent("""
             Button A: X+94, Y+34
             Button B: X+22, Y+67
             Prize: X=8400, Y=5400
-            
+
             Button A: X+26, Y+66
             Button B: X+67, Y+21
             Prize: X=12748, Y=12176
-            
+
             Button A: X+17, Y+86
             Button B: X+84, Y+37
             Prize: X=7870, Y=6450
-            
+
             Button A: X+69, Y+23
             Button B: X+27, Y+71
             Prize: X=18641, Y=10279
         """).strip()
+
+    def test_part_one(self):
         expected_output = 480
-        self.assertEqual(expected_output, solve_part_one(puzzle_input))
+        self.assertEqual(expected_output, solve_part_one(self.PUZZLE_INPUT))
 
     def test_part_two(self):
-        pass
+        expected_output = 875318608908
+        self.assertEqual(expected_output, solve_part_two(self.PUZZLE_INPUT))
 
 
 if __name__ == "__main__":
