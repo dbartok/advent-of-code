@@ -2,6 +2,7 @@ import textwrap
 import unittest
 import re
 import operator
+import numpy as np
 from pygame.math import Vector2 as Vector
 from collections import namedtuple
 from functools import reduce
@@ -18,18 +19,22 @@ def solve_part_one(puzzle_input, width=101, height=103):
     """
     robots = parse_input(puzzle_input)
     simulation = RobotSimulation(robots, width, height)
-    simulation.simulate(100)
+    simulation.simulate_for_time_steps(100)
     return simulation.calculate_safety_factor()
 
 
-def solve_part_two(puzzle_input):
+def solve_part_two(puzzle_input, width=101, height=103):
     """
     Solve part two of the Advent of Code puzzle.
 
     :param puzzle_input: The input data as string
+    :param width: Width of the area that the robots are in
+    :param height: Height of the area that the robots are in
     :return: Solution for part two
     """
-    pass
+    robots = parse_input(puzzle_input)
+    simulation = RobotSimulation(robots, width, height)
+    return simulation.find_tree_time_step()
 
 
 Robot = namedtuple('Robot', ['pos', 'vel'])
@@ -55,29 +60,46 @@ class RobotSimulation:
         self._width = width
         self._height = height
 
-    def simulate(self, num_steps):
-        for _ in range(num_steps):
-            # Create new list of robots with updated positions
-            self._robots = [
-                Robot(
-                    pos=robot.pos + robot.vel,
-                    vel=robot.vel
-                )
-                for robot in self._robots
-            ]
-
-            # Wrap around the edges of the space
-            self._robots = [
-                Robot(
-                    pos=Vector(robot.pos.x % self._width, robot.pos.y % self._height),
-                    vel=robot.vel
-                )
-                for robot in self._robots
-            ]
+    def simulate_for_time_steps(self, time_steps):
+        for _ in range(time_steps):
+            self._simulate_step()
 
     def calculate_safety_factor(self):
         quadrants = self._count_robots_in_quadrants()
         return reduce(operator.mul, quadrants, 1)
+
+    def find_tree_time_step(self):
+        min_variance = float('inf')
+        min_time_step = -1
+        current_time_step = 0
+
+        while current_time_step < self._width * self._height:
+            self._simulate_step()
+            current_time_step += 1
+            current_variance = self._calculate_variance()
+
+            if current_variance < min_variance:
+                min_variance = current_variance
+                min_time_step = current_time_step
+
+        return min_time_step
+
+    def _simulate_step(self):
+        # Move the robots and apply edge wrapping
+        self._robots = [
+            Robot(
+                pos=robot.pos + robot.vel,
+                vel=robot.vel
+            )
+            for robot in self._robots
+        ]
+        self._robots = [
+            Robot(
+                pos=Vector(robot.pos.x % self._width, robot.pos.y % self._height),
+                vel=robot.vel
+            )
+            for robot in self._robots
+        ]
 
     def _count_robots_in_quadrants(self):
         quadrants = [0, 0, 0, 0]  # [top-left, top-right, bottom-left, bottom-right]
@@ -100,6 +122,16 @@ class RobotSimulation:
                 quadrants[3] += 1
 
         return quadrants
+
+    def _calculate_variance(self):
+        # Calculate the variance of the x and y positions of all robots
+        x_coords = [robot.pos.x for robot in self._robots]
+        y_coords = [robot.pos.y for robot in self._robots]
+
+        variance_x = np.var(x_coords)
+        variance_y = np.var(y_coords)
+
+        return variance_x + variance_y
 
 
 def main():
@@ -133,6 +165,7 @@ class TestAdventOfCode(unittest.TestCase):
         self.assertEqual(expected_output, solve_part_one(puzzle_input, 11, 7))
 
     def test_part_two(self):
+        # Manual test only
         pass
 
 
