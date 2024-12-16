@@ -1,6 +1,8 @@
 import textwrap
 import unittest
 import itertools
+from collections import deque
+
 from pygame.math import Vector2
 from copy import deepcopy
 
@@ -38,7 +40,10 @@ def solve_part_two(puzzle_input):
     :param puzzle_input: The input data as string
     :return: Solution for part two
     """
-    pass
+    grid, moves = parse_input(puzzle_input)
+    robot_sim = WideWareHouseRobot(grid, moves)
+    robot_sim.run_simulation()
+    return robot_sim.compute_gps_sum()
 
 
 def parse_input(input_data):
@@ -49,6 +54,11 @@ def parse_input(input_data):
 
 
 class WarehouseRobot:
+    LEFT = Vector(-1, 0)
+    RIGHT = Vector(1, 0)
+    UP = Vector(0, -1)
+    DOWN = Vector(0, 1)
+
     def __init__(self, grid, moves):
         self._robot_position = None
         self._wall_positions = set()
@@ -60,15 +70,13 @@ class WarehouseRobot:
 
         for x, y in coordinates:
             cell = grid[y][x]
-            if cell == '.':
-                continue
 
             position = Vector(x, y)
             if cell == '@':
                 self._robot_position = position
             elif cell == '#':
                 self._wall_positions.add(position)
-            else:
+            elif cell == 'O' or cell == '[':
                 self._box_positions.add(position)
 
         self._moves = moves
@@ -79,28 +87,32 @@ class WarehouseRobot:
             self._move_robot(direction)
 
     def compute_gps_sum(self):
-        return sum(100 * box_position.y + box_position.x for box_position in self._box_positions)
+        return int(sum(100 * box_position.y + box_position.x for box_position in self._box_positions))
 
     def _move_robot(self, direction):
-        new_position = self._robot_position + direction
-        if new_position not in self._wall_positions:
-            potentional_box_position = deepcopy(new_position)
-            boxes_pushed = []
-            while potentional_box_position not in self._wall_positions and potentional_box_position in self._box_positions:
-                boxes_pushed.append(deepcopy(potentional_box_position))
-                potentional_box_position += direction
+        boxes_pushed = self.identify_pushed_boxes(direction)
 
-            if self._can_push_boxes(boxes_pushed, direction):
-                self._push_boxes(boxes_pushed, direction)
-                self._robot_position = new_position
+        if self._can_push_boxes(boxes_pushed, direction):
+            self._push_boxes(boxes_pushed, direction)
+            self._robot_position += direction
+
+    def identify_pushed_boxes(self, direction):
+        potential_box_position = self._robot_position + direction
+        boxes_pushed = []
+
+        while potential_box_position not in self._wall_positions and potential_box_position in self._box_positions:
+            boxes_pushed.append(deepcopy(potential_box_position))
+            potential_box_position += direction
+
+        return boxes_pushed
 
     def _can_push_boxes(self, boxes, direction):
         if not boxes:
-            return True
+            return self._robot_position + direction not in self._wall_positions
 
         # Check if there is space to push the boxes
-        last_box_pos = boxes[-1] + direction
-        return last_box_pos not in self._wall_positions
+        last_box_position = boxes[-1] + direction
+        return last_box_position not in self._wall_positions
 
     def _push_boxes(self, boxes_pushed, direction):
         # Reverse the order to prevent boxes from temporarily overlapping when moved.
@@ -112,13 +124,81 @@ class WarehouseRobot:
 
     def _get_direction(self, move):
         if move == '>':
-            return Vector(1, 0)
+            return self.RIGHT
         elif move == '<':
-            return Vector(-1, 0)
+            return self.LEFT
         elif move == '^':
-            return Vector(0, -1)
+            return self.UP
         elif move == 'v':
-            return Vector(0, 1)
+            return self.DOWN
+
+
+class WideWareHouseRobot(WarehouseRobot):
+    def __init__(self, grid, moves):
+        # Expand the grid to make it twice as wide
+        expanded_grid = self._expand_grid(grid)
+        super().__init__(expanded_grid, moves)
+
+    @staticmethod
+    def _expand_grid(grid):
+        # Expand the grid by doubling the width and modifying the characters as required
+        height, width = len(grid), len(grid[0])
+        new_grid = []
+
+        for y in range(height):
+            new_row = []
+            for x in range(width):
+                cell = grid[y][x]
+                if cell == '#':
+                    new_row.append('##')
+                elif cell == 'O':
+                    new_row.append('[]')
+                elif cell == '.':
+                    new_row.append('..')
+                elif cell == '@':
+                    new_row.append('@.')
+            new_grid.append(''.join(new_row))
+
+        return new_grid
+
+    def identify_pushed_boxes(self, direction):
+        boxes_to_process_queue = deque()
+
+        for offset in [0, 1]:  # 0 for the left side of the box, 1 for the right side of the box
+            potential_pushed_box_position = self._robot_position + direction - Vector(offset, 0)
+            if potential_pushed_box_position in self._box_positions:
+                boxes_to_process_queue.append(potential_pushed_box_position)
+
+        boxes_pushed = []
+        while boxes_to_process_queue:
+            box_to_process = boxes_to_process_queue.popleft()
+            if box_to_process in boxes_pushed:
+                continue
+
+            boxes_pushed.append(box_to_process)
+            neighbor_boxes = self._get_neighbor_boxes(box_to_process, direction)
+            boxes_to_process_queue.extend(neighbor_boxes)
+
+        return boxes_pushed
+
+    def _can_push_boxes(self, boxes, direction):
+        if not boxes:
+            return self._robot_position + direction not in self._wall_positions
+
+        return all(self._can_push_box(box, direction) for box in boxes)
+
+    def _get_neighbor_boxes(self, box_to_process, direction):
+        potential_neighbor_box_positions = [
+            box_to_process + direction,
+            box_to_process + direction + Vector(-1, 0),
+            box_to_process + direction + Vector(1, 0)
+        ]
+
+        actual_neighbor_boxes = [box for box in potential_neighbor_box_positions if box in self._box_positions]
+        return actual_neighbor_boxes
+
+    def _can_push_box(self, box, direction):
+        return all((box + direction + offset) not in self._wall_positions for offset in [Vector(0, 0), Vector(1, 0)])
 
 
 def main():
@@ -133,35 +213,37 @@ def main():
 
 
 class TestAdventOfCode(unittest.TestCase):
+    PUZZLE_INPUT = textwrap.dedent("""
+        ##########
+        #..O..O.O#
+        #......O.#
+        #.OO..O.O#
+        #..O@..O.#
+        #O#..O...#
+        #O..O..O.#
+        #.OO.O.OO#
+        #....O...#
+        ##########
+        
+        <vv>^<v^>v>^vv^v>v<>v^v<v<^vv<<<^><<><>>v<vvv<>^v^>^<<<><<v<<<v^vv^v>^
+        vvv<<^>^v^^><<>>><>^<<><^vv^^<>vvv<>><^^v>^>vv<>v<<<<v<^v>^<^^>>>^<v<v
+        ><>vv>v^v^<>><>>>><^^>vv>v<^^^>>v^v^<^^>v^^>v^<^v>v<>>v^v^<v>v^^<^^vv<
+        <<v<^>>^^^^>>>v^<>vvv^><v<<<>^^^vv^<vvv>^>v<^^^^v<>^>vvvv><>>v^<<^^^^^
+        ^><^><>>><>^^<<^^v>>><^<v>^<vv>>v>>>^v><>^v><<<<v>>v<v<v>vvv>^<><<>^><
+        ^>><>^v<><^vvv<^^<><v<<<<<><^v<<<><<<^^<v<^^^><^>>^<v^><<<^>>^v<v^v<v^
+        >^>>^v>vv>^<<^v<>><<><<v<<v><>v<^vv<<<>^^v^>^^>>><<^v>>v^v><^^>>^<>vv^
+        <><^^>^^^<><vvvvv^v<v<<>^v<v>v<<^><<><<><<<^^<<<^<<>><<><^^^>^^<>^>v<>
+        ^^>vv<^v^v<vv>^<><v<^v>^^^>>>^^vvv^>vvv<>>>^<^>>>>>^<<^v>^vvv<>^<><<v>
+        v^^>>><<^^<>>^v^<v^vv<>v^<<>^<^v^v><^<<<><<^<v><v<>vv>>v><v^<vv<>v^<<^
+            """).strip()
+
     def test_part_one(self):
-        puzzle_input = textwrap.dedent("""
-            ##########
-            #..O..O.O#
-            #......O.#
-            #.OO..O.O#
-            #..O@..O.#
-            #O#..O...#
-            #O..O..O.#
-            #.OO.O.OO#
-            #....O...#
-            ##########
-            
-            <vv>^<v^>v>^vv^v>v<>v^v<v<^vv<<<^><<><>>v<vvv<>^v^>^<<<><<v<<<v^vv^v>^
-            vvv<<^>^v^^><<>>><>^<<><^vv^^<>vvv<>><^^v>^>vv<>v<<<<v<^v>^<^^>>>^<v<v
-            ><>vv>v^v^<>><>>>><^^>vv>v<^^^>>v^v^<^^>v^^>v^<^v>v<>>v^v^<v>v^^<^^vv<
-            <<v<^>>^^^^>>>v^<>vvv^><v<<<>^^^vv^<vvv>^>v<^^^^v<>^>vvvv><>>v^<<^^^^^
-            ^><^><>>><>^^<<^^v>>><^<v>^<vv>>v>>>^v><>^v><<<<v>>v<v<v>vvv>^<><<>^><
-            ^>><>^v<><^vvv<^^<><v<<<<<><^v<<<><<<^^<v<^^^><^>>^<v^><<<^>>^v<v^v<v^
-            >^>>^v>vv>^<<^v<>><<><<v<<v><>v<^vv<<<>^^v^>^^>>><<^v>>v^v><^^>>^<>vv^
-            <><^^>^^^<><vvvvv^v<v<<>^v<v>v<<^><<><<><<<^^<<<^<<>><<><^^^>^^<>^>v<>
-            ^^>vv<^v^v<vv>^<><v<^v>^^^>>>^^vvv^>vvv<>>>^<^>>>>>^<<^v>^vvv<>^<><<v>
-            v^^>>><<^^<>>^v^<v^vv<>v^<<>^<^v^v><^<<<><<^<v><v<>vv>>v><v^<vv<>v^<<^
-        """).strip()
         expected_output = 10092
-        self.assertEqual(expected_output, solve_part_one(puzzle_input))
+        self.assertEqual(expected_output, solve_part_one(self.PUZZLE_INPUT))
 
     def test_part_two(self):
-        pass
+        expected_output = 9021
+        self.assertEqual(expected_output, solve_part_two(self.PUZZLE_INPUT))
 
 
 if __name__ == "__main__":
