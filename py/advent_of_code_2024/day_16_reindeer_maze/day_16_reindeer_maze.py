@@ -32,7 +32,7 @@ def solve_part_one(puzzle_input):
     grid = [list(row) for row in puzzle_input.splitlines()]
     reindeer_maze = ReindeerMaze(grid)
     reindeer_maze.traverse()
-    return reindeer_maze.get_score()
+    return reindeer_maze.get_best_score()
 
 
 def solve_part_two(puzzle_input):
@@ -42,7 +42,10 @@ def solve_part_two(puzzle_input):
     :param puzzle_input: The input data as string
     :return: Solution for part two
     """
-    pass
+    grid = [list(row) for row in puzzle_input.splitlines()]
+    reindeer_maze = ReindeerMaze(grid)
+    reindeer_maze.traverse()
+    return reindeer_maze.get_num_tiles_part_of_at_least_one_best_path()
 
 
 class ReindeerMaze:
@@ -54,7 +57,9 @@ class ReindeerMaze:
         self._grid = grid
         self._start_position = self._find_position('S')
         self._end_position = self._find_position('E')
-        self._score = float('inf')
+
+        self._best_score = float('inf')
+        self._best_path_tiles = set()
 
     def _find_position(self, char):
         for y, row in enumerate(self._grid):
@@ -63,39 +68,54 @@ class ReindeerMaze:
                     return Vector(x, y)
 
     def traverse(self):
-        # Priority queue will store tuples of (score, position, direction)
+        # Priority queue will store tuples of (score, path, direction)
         priority_queue = []
-        heappush(priority_queue, (0, self._start_position, self.EAST_DIRECTION_INDEX))
-        visited = set()
+        heappush(priority_queue, (0, [self._start_position], self.EAST_DIRECTION_INDEX))
+        # Dictionary to track best score for each state (position + direction)
+        state_to_best_score_so_far = {}
 
         while priority_queue:
-            current_score, current_position, current_direction_index = heappop(priority_queue)
+            current_score, current_path, current_direction_index = heappop(priority_queue)
+            current_position = current_path[-1]
+            current_state = (current_position, current_direction_index)
 
-            # Avoid revisiting the same state
-            if (current_position, current_direction_index) in visited:
+            # Avoid revisiting the same state if a better score was already found
+            # We explicitly continue if another equal score was found so that we identify all best paths
+            if (current_state in state_to_best_score_so_far
+                    and state_to_best_score_so_far[current_state] < current_score):
                 continue
+            state_to_best_score_so_far[current_state] = current_score
 
+            # If we reach the endpoint, check if we found a better path
             if current_position == self._end_position:
-                self._score = current_score
-                return
-
-            visited.add((current_position, current_direction_index))
+                if current_score < self._best_score:
+                    self._best_score = current_score
+                    # All best path tiles so far are invalid, start from scratch
+                    self._best_path_tiles.clear()
+                    self._best_path_tiles.update(current_path)
+                elif current_score == self._best_score:
+                    # Existing best path tiles stay valid, add current path
+                    self._best_path_tiles.update(current_path)
 
             # Move forward
             forward_position = current_position + self.DIRECTIONS[current_direction_index]
             if self._grid[int(forward_position.y)][int(forward_position.x)] != '#':
-                heappush(priority_queue, (current_score + 1, forward_position, current_direction_index))
+                heappush(priority_queue,
+                         (current_score + 1, current_path + [forward_position], current_direction_index))
 
             # Turn left (counterclockwise)
             new_direction_index = (current_direction_index + 1) % 4
-            heappush(priority_queue, (current_score + 1000, current_position, new_direction_index))
+            heappush(priority_queue, (current_score + 1000, current_path + [current_position], new_direction_index))
 
             # Turn right (clockwise)
             new_direction_index = (current_direction_index - 1) % 4
-            heappush(priority_queue, (current_score + 1000, current_position, new_direction_index))
+            heappush(priority_queue, (current_score + 1000, current_path + [current_position], new_direction_index))
 
-    def get_score(self):
-        return self._score
+    def get_best_score(self):
+        return self._best_score
+
+    def get_num_tiles_part_of_at_least_one_best_path(self):
+        return len(self._best_path_tiles)
 
 
 def main():
@@ -110,52 +130,59 @@ def main():
 
 
 class TestAdventOfCode(unittest.TestCase):
-    def test_part_one(self):
-        puzzle_input = textwrap.dedent("""
-            ###############
-            #.......#....E#
-            #.#.###.#.###.#
-            #.....#.#...#.#
-            #.###.#####.#.#
-            #.#.#.......#.#
-            #.#.#####.###.#
-            #...........#.#
-            ###.#.#####.#.#
-            #...#.....#.#.#
-            #.#.#.###.#.#.#
-            #.....#...#.#.#
-            #.###.#.#.#.#.#
-            #S..#.....#...#
-            ###############
-        """).strip()
+    FIRST_EXAMPLE = textwrap.dedent("""
+        ###############
+        #.......#....E#
+        #.#.###.#.###.#
+        #.....#.#...#.#
+        #.###.#####.#.#
+        #.#.#.......#.#
+        #.#.#####.###.#
+        #...........#.#
+        ###.#.#####.#.#
+        #...#.....#.#.#
+        #.#.#.###.#.#.#
+        #.....#...#.#.#
+        #.###.#.#.#.#.#
+        #S..#.....#...#
+        ###############
+    """).strip()
+
+    SECOND_EXAMPLE = textwrap.dedent("""
+        #################
+        #...#...#...#..E#
+        #.#.#.#.#.#.#.#.#
+        #.#.#.#...#...#.#
+        #.#.#.#.###.#.#.#
+        #...#.#.#.....#.#
+        #.#.#.#.#.#####.#
+        #.#...#.#.#.....#
+        #.#.#####.#.###.#
+        #.#.#.......#...#
+        #.#.###.#####.###
+        #.#.#...#.....#.#
+        #.#.#.#####.###.#
+        #.#.#.........#.#
+        #.#.#.#########.#
+        #S#.............#
+        #################
+    """).strip()
+
+    def test_part_one_first_example(self):
         expected_output = 7036
-        self.assertEqual(expected_output, solve_part_one(puzzle_input))
+        self.assertEqual(expected_output, solve_part_one(self.FIRST_EXAMPLE))
 
     def test_part_one_second_example(self):
-        puzzle_input = textwrap.dedent("""
-            #################
-            #...#...#...#..E#
-            #.#.#.#.#.#.#.#.#
-            #.#.#.#...#...#.#
-            #.#.#.#.###.#.#.#
-            #...#.#.#.....#.#
-            #.#.#.#.#.#####.#
-            #.#...#.#.#.....#
-            #.#.#####.#.###.#
-            #.#.#.......#...#
-            #.#.###.#####.###
-            #.#.#...#.....#.#
-            #.#.#.#####.###.#
-            #.#.#.........#.#
-            #.#.#.#########.#
-            #S#.............#
-            #################
-        """).strip()
         expected_output = 11048
-        self.assertEqual(expected_output, solve_part_one(puzzle_input))
+        self.assertEqual(expected_output, solve_part_one(self.SECOND_EXAMPLE))
 
-    def test_part_two(self):
-        pass
+    def test_part_two_first_example(self):
+        expected_output = 45
+        self.assertEqual(expected_output, solve_part_two(self.FIRST_EXAMPLE))
+
+    def test_part_two_second_example(self):
+        expected_output = 64
+        self.assertEqual(expected_output, solve_part_two(self.SECOND_EXAMPLE))
 
 
 if __name__ == "__main__":
