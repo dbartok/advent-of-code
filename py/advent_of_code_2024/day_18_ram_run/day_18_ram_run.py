@@ -3,6 +3,9 @@ import unittest
 from collections import deque
 from pygame.math import Vector2
 
+REAL_INPUT_GRID_SIZE = 71
+REAL_INPUT_NUM_BYTE_FALLS_TO_SIMULATE = 71
+
 
 class HashableVector(Vector2):
     def __hash__(self):
@@ -17,7 +20,8 @@ class HashableVector(Vector2):
 Vector = HashableVector
 
 
-def solve_part_one(puzzle_input, grid_size=71, num_byte_falls_to_simulate=1024):
+def solve_part_one(puzzle_input, grid_size=REAL_INPUT_GRID_SIZE,
+                   num_byte_falls_to_simulate=REAL_INPUT_NUM_BYTE_FALLS_TO_SIMULATE):
     """
     Solve part one of the Advent of Code puzzle.
 
@@ -30,14 +34,23 @@ def solve_part_one(puzzle_input, grid_size=71, num_byte_falls_to_simulate=1024):
     return traverser.get_shortest_path_length()
 
 
-def solve_part_two(puzzle_input):
+def solve_part_two(puzzle_input, grid_size=REAL_INPUT_GRID_SIZE):
     """
     Solve part two of the Advent of Code puzzle.
 
     :param puzzle_input: The input data as string
     :return: Solution for part two
     """
-    pass
+    byte_falls = parse_input(puzzle_input)
+
+    # Simulate the byte falls one by one and check the path
+    for num_byte_falls in range(1, len(byte_falls) + 1):
+        traverser = MemoryGridTraverser(byte_falls, grid_size, num_byte_falls)
+        traverser.find_shortest_path()
+        shortest_path_length = traverser.get_shortest_path_length()
+        if shortest_path_length == float('inf'):
+            blocked_byte = byte_falls[num_byte_falls - 1]
+            return f"{blocked_byte[0]},{blocked_byte[1]}"
 
 
 class MemoryGridTraverser:
@@ -101,39 +114,41 @@ def main():
 
 
 class TestAdventOfCode(unittest.TestCase):
+    PUZZLE_INPUT = textwrap.dedent("""
+        5,4
+        4,2
+        4,5
+        3,0
+        2,1
+        6,3
+        2,4
+        1,5
+        0,6
+        3,3
+        2,6
+        5,1
+        1,2
+        5,5
+        2,5
+        6,5
+        1,4
+        0,4
+        6,4
+        1,1
+        6,1
+        1,0
+        0,5
+        1,6
+        2,0
+    """).strip()
+
     def test_part_one(self):
-        puzzle_input = textwrap.dedent("""
-            5,4
-            4,2
-            4,5
-            3,0
-            2,1
-            6,3
-            2,4
-            1,5
-            0,6
-            3,3
-            2,6
-            5,1
-            1,2
-            5,5
-            2,5
-            6,5
-            1,4
-            0,4
-            6,4
-            1,1
-            6,1
-            1,0
-            0,5
-            1,6
-            2,0
-        """).strip()
         expected_output = 22
-        self.assertEqual(expected_output, solve_part_one(puzzle_input, 7, 12))
+        self.assertEqual(expected_output, solve_part_one(self.PUZZLE_INPUT, 7, 12))
 
     def test_part_two(self):
-        pass
+        expected_output = "6,1"
+        self.assertEqual(expected_output, solve_part_two(self.PUZZLE_INPUT, 7))
 
 
 if __name__ == "__main__":
