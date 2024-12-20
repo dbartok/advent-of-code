@@ -55,10 +55,10 @@ class ReindeerMaze:
 
     def __init__(self, grid):
         self._grid = grid
-        self._start_position = self._find_position('S')
-        self._end_position = self._find_position('E')
+        self._start_position = self._find_position("S")
+        self._end_position = self._find_position("E")
 
-        self._best_score = float('inf')
+        self._best_score = float("inf")
         self._best_path_tiles = set()
 
     def _find_position(self, char):
@@ -75,14 +75,18 @@ class ReindeerMaze:
         state_to_best_score_so_far = {}
 
         while priority_queue:
-            current_score, current_path, current_direction_index = heappop(priority_queue)
+            current_score, current_path, current_direction_index = heappop(
+                priority_queue
+            )
             current_position = current_path[-1]
             current_state = (current_position, current_direction_index)
 
             # Avoid revisiting the same state if a better score was already found
             # We explicitly continue if another equal score was found so that we identify all best paths
-            if (current_state in state_to_best_score_so_far
-                    and state_to_best_score_so_far[current_state] < current_score):
+            if (
+                current_state in state_to_best_score_so_far
+                and state_to_best_score_so_far[current_state] < current_score
+            ):
                 continue
             state_to_best_score_so_far[current_state] = current_score
 
@@ -98,18 +102,40 @@ class ReindeerMaze:
                     self._best_path_tiles.update(current_path)
 
             # Move forward
-            forward_position = current_position + self.DIRECTIONS[current_direction_index]
-            if self._grid[int(forward_position.y)][int(forward_position.x)] != '#':
-                heappush(priority_queue,
-                         (current_score + 1, current_path + [forward_position], current_direction_index))
+            forward_position = (
+                current_position + self.DIRECTIONS[current_direction_index]
+            )
+            if self._grid[int(forward_position.y)][int(forward_position.x)] != "#":
+                heappush(
+                    priority_queue,
+                    (
+                        current_score + 1,
+                        current_path + [forward_position],
+                        current_direction_index,
+                    ),
+                )
 
             # Turn left (counterclockwise)
             new_direction_index = (current_direction_index + 1) % 4
-            heappush(priority_queue, (current_score + 1000, current_path + [current_position], new_direction_index))
+            heappush(
+                priority_queue,
+                (
+                    current_score + 1000,
+                    current_path + [current_position],
+                    new_direction_index,
+                ),
+            )
 
             # Turn right (clockwise)
             new_direction_index = (current_direction_index - 1) % 4
-            heappush(priority_queue, (current_score + 1000, current_path + [current_position], new_direction_index))
+            heappush(
+                priority_queue,
+                (
+                    current_score + 1000,
+                    current_path + [current_position],
+                    new_direction_index,
+                ),
+            )
 
     def get_best_score(self):
         return self._best_score
@@ -130,7 +156,8 @@ def main():
 
 
 class TestAdventOfCode(unittest.TestCase):
-    FIRST_EXAMPLE = textwrap.dedent("""
+    FIRST_EXAMPLE = textwrap.dedent(
+        """
         ###############
         #.......#....E#
         #.#.###.#.###.#
@@ -146,9 +173,11 @@ class TestAdventOfCode(unittest.TestCase):
         #.###.#.#.#.#.#
         #S..#.....#...#
         ###############
-    """).strip()
+    """
+    ).strip()
 
-    SECOND_EXAMPLE = textwrap.dedent("""
+    SECOND_EXAMPLE = textwrap.dedent(
+        """
         #################
         #...#...#...#..E#
         #.#.#.#.#.#.#.#.#
@@ -166,7 +195,8 @@ class TestAdventOfCode(unittest.TestCase):
         #.#.#.#########.#
         #S#.............#
         #################
-    """).strip()
+    """
+    ).strip()
 
     def test_part_one_first_example(self):
         expected_output = 7036

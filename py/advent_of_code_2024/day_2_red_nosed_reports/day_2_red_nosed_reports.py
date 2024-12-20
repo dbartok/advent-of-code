@@ -25,16 +25,20 @@ def solve_part_two(puzzle_input):
 
 
 def parse_puzzle_input(puzzle_input):
-    return [list(map(int, line.split())) for line in puzzle_input.split('\n')]
+    return [list(map(int, line.split())) for line in puzzle_input.split("\n")]
 
 
 def is_safe(report):
     differences = [report[i + 1] - report[i] for i in range(len(report) - 1)]
-    return all(1 <= d <= 3 for d in differences) or all(-3 <= d <= -1 for d in differences)
+    return all(1 <= d <= 3 for d in differences) or all(
+        -3 <= d <= -1 for d in differences
+    )
 
 
 def is_safe_with_problem_dampener(report):
-    reports_with_one_element_removed = [report[:i] + report[i + 1:] for i in range(len(report))]
+    reports_with_one_element_removed = [
+        report[:i] + report[i + 1 :] for i in range(len(report))
+    ]
     return any(is_safe(report) for report in reports_with_one_element_removed)
 
 
@@ -50,14 +54,16 @@ def main():
 
 
 class TestAdventOfCode(unittest.TestCase):
-    PUZZLE_INPUT = textwrap.dedent("""
+    PUZZLE_INPUT = textwrap.dedent(
+        """
         7 6 4 2 1
         1 2 7 8 9
         9 7 6 2 1
         1 3 2 4 5
         8 6 4 4 1
         1 3 6 7 9
-    """).strip()
+    """
+    ).strip()
 
     def test_part_one(self):
         expected_output = 2

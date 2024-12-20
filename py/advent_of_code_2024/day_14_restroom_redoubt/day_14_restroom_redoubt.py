@@ -37,7 +37,7 @@ def solve_part_two(puzzle_input, width=101, height=103):
     return simulation.find_tree_time_step()
 
 
-Robot = namedtuple('Robot', ['pos', 'vel'])
+Robot = namedtuple("Robot", ["pos", "vel"])
 
 
 def parse_input(puzzle_input):
@@ -69,7 +69,7 @@ class RobotSimulation:
         return reduce(operator.mul, quadrants, 1)
 
     def find_tree_time_step(self):
-        min_variance = float('inf')
+        min_variance = float("inf")
         min_time_step = -1
         current_time_step = 0
 
@@ -87,16 +87,12 @@ class RobotSimulation:
     def _simulate_step(self):
         # Move the robots and apply edge wrapping
         self._robots = [
-            Robot(
-                pos=robot.pos + robot.vel,
-                vel=robot.vel
-            )
-            for robot in self._robots
+            Robot(pos=robot.pos + robot.vel, vel=robot.vel) for robot in self._robots
         ]
         self._robots = [
             Robot(
                 pos=Vector(robot.pos.x % self._width, robot.pos.y % self._height),
-                vel=robot.vel
+                vel=robot.vel,
             )
             for robot in self._robots
         ]
@@ -147,7 +143,8 @@ def main():
 
 class TestAdventOfCode(unittest.TestCase):
     def test_part_one(self):
-        puzzle_input = textwrap.dedent("""
+        puzzle_input = textwrap.dedent(
+            """
             p=0,4 v=3,-3
             p=6,3 v=-1,-3
             p=10,3 v=-1,2
@@ -160,7 +157,8 @@ class TestAdventOfCode(unittest.TestCase):
             p=7,3 v=-1,2
             p=2,4 v=2,-3
             p=9,5 v=-3,-3
-        """).strip()
+        """
+        ).strip()
         expected_output = 12
         self.assertEqual(expected_output, solve_part_one(puzzle_input, 11, 7))
 

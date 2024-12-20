@@ -32,14 +32,14 @@ def solve_part_two(puzzle_input):
 
 class GuardPatrolSimulator:
     # Order of directions (up, right, down, left)
-    DIRECTIONS = ['^', '>', 'v', '<']
+    DIRECTIONS = ["^", ">", "v", "<"]
 
     # Movement deltas for directions: up, right, down, left
     DELTAS = {
-        '^': Vector(0, -1),  # Move up
-        '>': Vector(1, 0),  # Move right
-        'v': Vector(0, 1),  # Move down
-        '<': Vector(-1, 0),  # Move left
+        "^": Vector(0, -1),  # Move up
+        ">": Vector(1, 0),  # Move right
+        "v": Vector(0, 1),  # Move down
+        "<": Vector(-1, 0),  # Move left
     }
 
     def __init__(self, grid):
@@ -55,13 +55,19 @@ class GuardPatrolSimulator:
 
     def find_start_position(self):
         return next(
-            Vector(x, y) for y in range(self._height) for x in range(self._width)
-            if self._get_element_at(Vector(x, y)) == '^'
+            Vector(x, y)
+            for y in range(self._height)
+            for x in range(self._width)
+            if self._get_element_at(Vector(x, y)) == "^"
         )
 
     def simulate(self):
         while self._is_within_bounds(self._current_position):
-            current_state = (self._current_position.x, self._current_position.y, self._current_direction_index)
+            current_state = (
+                self._current_position.x,
+                self._current_position.y,
+                self._current_direction_index,
+            )
             if current_state in self._visited:
                 self._has_terminated_due_to_loop = True
                 break
@@ -69,7 +75,10 @@ class GuardPatrolSimulator:
             self._visited.add(current_state)
 
             next_position = self._get_next_position()
-            if self._is_within_bounds(next_position) and self._get_element_at(next_position) == '#':
+            if (
+                self._is_within_bounds(next_position)
+                and self._get_element_at(next_position) == "#"
+            ):
                 self._turn_right()
             else:
                 self._current_position = next_position
@@ -105,14 +114,19 @@ class GuardPatrolLoopFinder:
         simulator = GuardPatrolSimulator(self._grid)
         start_position = simulator.find_start_position()
 
-        return len([
-            (x, y) for y in range(self._height) for x in range(self._width)
-            if Vector(x, y) != start_position and self._has_loop_with_obstacle_at(x, y)
-        ])
+        return len(
+            [
+                (x, y)
+                for y in range(self._height)
+                for x in range(self._width)
+                if Vector(x, y) != start_position
+                and self._has_loop_with_obstacle_at(x, y)
+            ]
+        )
 
     def _has_loop_with_obstacle_at(self, x, y):
         new_grid = deepcopy(self._grid)
-        new_grid[y][x] = '#'
+        new_grid[y][x] = "#"
         simulator = GuardPatrolSimulator(new_grid)
         simulator.simulate()
         return simulator.has_terminated_due_to_loop()
@@ -130,7 +144,8 @@ def main():
 
 
 class TestAdventOfCode(unittest.TestCase):
-    PUZZLE_INPUT = textwrap.dedent("""
+    PUZZLE_INPUT = textwrap.dedent(
+        """
         ....#.....
         .........#
         ..........
@@ -141,7 +156,8 @@ class TestAdventOfCode(unittest.TestCase):
         ........#.
         #.........
         ......#...
-    """).strip()
+    """
+    ).strip()
 
     def test_part_one(self):
         expected_output = 41

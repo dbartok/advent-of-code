@@ -46,7 +46,9 @@ class DiskCompactor:
             if remaining_space_size == 0:
                 # Write file that was originally after this space
                 file_after_space_index = space_index + 1
-                self._new_disk_layout.append((file_after_space_index, self._file_sizes[file_after_space_index]))
+                self._new_disk_layout.append(
+                    (file_after_space_index, self._file_sizes[file_after_space_index])
+                )
 
                 # Move onto next space
                 space_index += 1
@@ -74,7 +76,9 @@ class DiskCompactor:
             expanded_layout.extend([file_id] * file_size)
 
         # Calculate checksum by summing the position * file_id for each block
-        checksum = sum(position * file_id for position, file_id in enumerate(expanded_layout))
+        checksum = sum(
+            position * file_id for position, file_id in enumerate(expanded_layout)
+        )
         return checksum
 
     def _parse_disk_map(self):
@@ -105,12 +109,16 @@ class WholeFileDiskCompactor(DiskCompactor):
 
         # Create new disk layout
         for space_size, file_id in zip(self._space_sizes, self._file_ids_in_new_order):
-            self._new_disk_layout.append((file_id, self._file_sizes[file_id]))  # Add file
+            self._new_disk_layout.append(
+                (file_id, self._file_sizes[file_id])
+            )  # Add file
             self._new_disk_layout.append((0, space_size))  # Add space with ID 0
 
     def _move_file_id_if_possible(self, file_id):
         file_size = self._file_sizes[file_id]
-        num_extra_spaces_before_file = self._file_ids_in_new_order.index(file_id) - file_id
+        num_extra_spaces_before_file = (
+            self._file_ids_in_new_order.index(file_id) - file_id
+        )
         file_index_adjusted_with_extra_spaces = file_id + num_extra_spaces_before_file
         # Try to find a span of free space that can fit the current file
         for space_index in range(file_index_adjusted_with_extra_spaces):
@@ -119,11 +127,15 @@ class WholeFileDiskCompactor(DiskCompactor):
             # If the space can fit the file, move the file to this space
             if space_size >= file_size:
                 # Adjust spaces at origin of move
-                combined_space_size = (self._space_sizes[file_index_adjusted_with_extra_spaces - 1] +
-                                       file_size +
-                                       self._space_sizes[file_index_adjusted_with_extra_spaces])
+                combined_space_size = (
+                    self._space_sizes[file_index_adjusted_with_extra_spaces - 1]
+                    + file_size
+                    + self._space_sizes[file_index_adjusted_with_extra_spaces]
+                )
                 del self._space_sizes[file_index_adjusted_with_extra_spaces]
-                self._space_sizes[file_index_adjusted_with_extra_spaces - 1] = combined_space_size
+                self._space_sizes[file_index_adjusted_with_extra_spaces - 1] = (
+                    combined_space_size
+                )
 
                 # Adjust spaces at destination of move
                 self._space_sizes[space_index] -= file_size
@@ -148,9 +160,11 @@ def main():
 
 
 class TestAdventOfCode(unittest.TestCase):
-    PUZZLE_INPUT = textwrap.dedent("""
+    PUZZLE_INPUT = textwrap.dedent(
+        """
         2333133121414131402
-    """).strip()
+    """
+    ).strip()
 
     def test_part_one(self):
         expected_output = 1928

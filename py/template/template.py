@@ -35,9 +35,11 @@ def main():
 
 class TestAdventOfCode(unittest.TestCase):
     def test_part_one(self):
-        puzzle_input = textwrap.dedent("""
+        puzzle_input = textwrap.dedent(
+            """
             test input
-        """).strip()
+        """
+        ).strip()
         expected_output = "expected output"
         self.assertEqual(expected_output, solve_part_one(puzzle_input))
 

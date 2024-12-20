@@ -39,7 +39,9 @@ class TopographicMap:
         self._height = len(grid)
         self._width = len(grid[0])
 
-        self._num_reachable_nines = 0  # Will store the total number of reachable 9s (for part 1)
+        self._num_reachable_nines = (
+            0  # Will store the total number of reachable 9s (for part 1)
+        )
         self._distinct_trails = set()  # Will store distinct hiking trails (for part 2)
 
     def _is_within_bounds(self, x, y):
@@ -51,7 +53,9 @@ class TopographicMap:
             return
 
         # BFS to explore reachable cells
-        queue = deque([(start_x, start_y, {(start_x, start_y)})])  # Track the path (visited nodes)
+        queue = deque(
+            [(start_x, start_y, {(start_x, start_y)})]
+        )  # Track the path (visited nodes)
         visited_nines = set()  # Track reached 9s for this trailhead
 
         while queue:
@@ -70,9 +74,11 @@ class TopographicMap:
             # Explore neighbors (left, right, up, down)
             for delta_x, delta_y in [(-1, 0), (1, 0), (0, -1), (0, 1)]:
                 new_x, new_y = x + delta_x, y + delta_y
-                if (self._is_within_bounds(new_x, new_y)
-                        and (new_x, new_y) not in trail_path
-                        and self._grid[new_y][new_x] == self._grid[y][x] + 1):
+                if (
+                    self._is_within_bounds(new_x, new_y)
+                    and (new_x, new_y) not in trail_path
+                    and self._grid[new_y][new_x] == self._grid[y][x] + 1
+                ):
                     new_trail_path = trail_path.copy()
                     new_trail_path.add((new_x, new_y))
                     queue.append((new_x, new_y, new_trail_path))
@@ -101,7 +107,8 @@ def main():
 
 
 class TestAdventOfCode(unittest.TestCase):
-    PUZZLE_INPUT = textwrap.dedent("""
+    PUZZLE_INPUT = textwrap.dedent(
+        """
         89010123
         78121874
         87430965
@@ -110,7 +117,8 @@ class TestAdventOfCode(unittest.TestCase):
         32019012
         01329801
         10456732
-    """).strip()
+    """
+    ).strip()
 
     def test_part_one(self):
         expected_output = 36

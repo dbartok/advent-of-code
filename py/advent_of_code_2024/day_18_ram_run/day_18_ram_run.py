@@ -20,8 +20,11 @@ class HashableVector(Vector2):
 Vector = HashableVector
 
 
-def solve_part_one(puzzle_input, grid_size=REAL_INPUT_GRID_SIZE,
-                   num_byte_falls_to_simulate=REAL_INPUT_NUM_BYTE_FALLS_TO_SIMULATE):
+def solve_part_one(
+    puzzle_input,
+    grid_size=REAL_INPUT_GRID_SIZE,
+    num_byte_falls_to_simulate=REAL_INPUT_NUM_BYTE_FALLS_TO_SIMULATE,
+):
     """
     Solve part one of the Advent of Code puzzle.
 
@@ -48,13 +51,18 @@ def solve_part_two(puzzle_input, grid_size=REAL_INPUT_GRID_SIZE):
         traverser = MemoryGridTraverser(byte_falls, grid_size, num_byte_falls)
         traverser.find_shortest_path()
         shortest_path_length = traverser.get_shortest_path_length()
-        if shortest_path_length == float('inf'):
+        if shortest_path_length == float("inf"):
             blocked_byte = byte_falls[num_byte_falls - 1]
             return f"{blocked_byte[0]},{blocked_byte[1]}"
 
 
 class MemoryGridTraverser:
-    DIRECTIONS = [Vector(0, -1), Vector(0, 1), Vector(-1, 0), Vector(1, 0)]  # Up, Down, Left, Right
+    DIRECTIONS = [
+        Vector(0, -1),
+        Vector(0, 1),
+        Vector(-1, 0),
+        Vector(1, 0),
+    ]  # Up, Down, Left, Right
 
     def __init__(self, byte_falls, grid_size, num_byte_falls_to_simulate):
         self._byte_falls = byte_falls
@@ -62,9 +70,11 @@ class MemoryGridTraverser:
         self._corrupted_positions = set()
         self._start = Vector(0, 0)
         self._end = Vector(grid_size - 1, grid_size - 1)
-        self._corrupted_positions.update([Vector(x, y) for x, y in self._byte_falls[:num_byte_falls_to_simulate]])
+        self._corrupted_positions.update(
+            [Vector(x, y) for x, y in self._byte_falls[:num_byte_falls_to_simulate]]
+        )
 
-        self._shortest_path_length = float('inf')
+        self._shortest_path_length = float("inf")
 
     def find_shortest_path(self):
         # Queue to store tuples in the form of (current_position, current_steps)
@@ -80,7 +90,9 @@ class MemoryGridTraverser:
                 return
 
             valid_neighbors = self._get_valid_neighbor_positions(current_position)
-            unvisited_valid_neighbors = [neighbor for neighbor in valid_neighbors if neighbor not in visited]
+            unvisited_valid_neighbors = [
+                neighbor for neighbor in valid_neighbors if neighbor not in visited
+            ]
 
             for neighbor_position in unvisited_valid_neighbors:
                 visited.add(neighbor_position)
@@ -90,16 +102,26 @@ class MemoryGridTraverser:
         return self._shortest_path_length
 
     def _get_valid_neighbor_positions(self, current_position):
-        potential_neighbors = [current_position + direction for direction in self.DIRECTIONS]
-        return [neighbor for neighbor in potential_neighbors if self._is_valid_position(neighbor)]
+        potential_neighbors = [
+            current_position + direction for direction in self.DIRECTIONS
+        ]
+        return [
+            neighbor
+            for neighbor in potential_neighbors
+            if self._is_valid_position(neighbor)
+        ]
 
     def _is_valid_position(self, position):
-        return 0 <= position.x < self._grid_size and 0 <= position.y < self._grid_size and position not in self._corrupted_positions
+        return (
+            0 <= position.x < self._grid_size
+            and 0 <= position.y < self._grid_size
+            and position not in self._corrupted_positions
+        )
 
 
 def parse_input(input_data):
     # Parse input as a list of tuples (x, y)
-    return [tuple(map(int, line.split(','))) for line in input_data.splitlines()]
+    return [tuple(map(int, line.split(","))) for line in input_data.splitlines()]
 
 
 def main():
@@ -114,7 +136,8 @@ def main():
 
 
 class TestAdventOfCode(unittest.TestCase):
-    PUZZLE_INPUT = textwrap.dedent("""
+    PUZZLE_INPUT = textwrap.dedent(
+        """
         5,4
         4,2
         4,5
@@ -140,7 +163,8 @@ class TestAdventOfCode(unittest.TestCase):
         0,5
         1,6
         2,0
-    """).strip()
+    """
+    ).strip()
 
     def test_part_one(self):
         expected_output = 22

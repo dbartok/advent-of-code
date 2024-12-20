@@ -60,19 +60,26 @@ class AntennaMap:
     def _process_antenna_pairs(self, positions):
         [
             self._antinode_positions.update(
-                [(antinode_position.x, antinode_position.y) for antinode_position in
-                 self._calculate_antinode_positions(antenna1_position, antenna2_position)]
+                [
+                    (antinode_position.x, antinode_position.y)
+                    for antinode_position in self._calculate_antinode_positions(
+                        antenna1_position, antenna2_position
+                    )
+                ]
             )
-            for antenna1_position, antenna2_position in itertools.combinations(positions, 2)
+            for antenna1_position, antenna2_position in itertools.combinations(
+                positions, 2
+            )
         ]
 
     def _calculate_antinode_positions(self, antenna1_position, antenna2_position):
         delta = antenna1_position - antenna2_position
-        antinode_positions = [
-            antenna1_position + delta,
-            antenna2_position - delta
+        antinode_positions = [antenna1_position + delta, antenna2_position - delta]
+        return [
+            antinode
+            for antinode in antinode_positions
+            if self._is_within_bounds(antinode)
         ]
-        return [antinode for antinode in antinode_positions if self._is_within_bounds(antinode)]
 
     def _is_within_bounds(self, position):
         return 0 <= position.x < self._width and 0 <= position.y < self._height
@@ -83,8 +90,12 @@ class ResonantAntennaMap(AntennaMap):
         delta = antenna1_position - antenna2_position
         antinode_positions = []
 
-        antinode_positions.extend(self._get_antinode_positions_in_direction(antenna1_position, delta, 1))
-        antinode_positions.extend(self._get_antinode_positions_in_direction(antenna2_position, delta, -1))
+        antinode_positions.extend(
+            self._get_antinode_positions_in_direction(antenna1_position, delta, 1)
+        )
+        antinode_positions.extend(
+            self._get_antinode_positions_in_direction(antenna2_position, delta, -1)
+        )
 
         return antinode_positions
 
@@ -92,7 +103,9 @@ class ResonantAntennaMap(AntennaMap):
         antinode_positions = []
         delta_multiplier = 0
 
-        while self._is_within_bounds(position := start_position + delta * direction * delta_multiplier):
+        while self._is_within_bounds(
+            position := start_position + delta * direction * delta_multiplier
+        ):
             antinode_positions.append(position)
             delta_multiplier += 1
 
@@ -111,7 +124,8 @@ def main():
 
 
 class TestAdventOfCode(unittest.TestCase):
-    PUZZLE_INPUT = textwrap.dedent("""
+    PUZZLE_INPUT = textwrap.dedent(
+        """
         ............
         ........0...
         .....0......
@@ -124,7 +138,8 @@ class TestAdventOfCode(unittest.TestCase):
         .........A..
         ............
         ............
-    """).strip()
+    """
+    ).strip()
 
     def test_part_one(self):
         expected_output = 14
