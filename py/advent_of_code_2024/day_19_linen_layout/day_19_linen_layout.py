@@ -27,8 +27,8 @@ def solve_part_two(puzzle_input):
 
 
 def parse_input(input_data):
-    parts = input_data.split('\n\n')
-    available_patterns = parts[0].split(', ')
+    parts = input_data.split("\n\n")
+    available_patterns = parts[0].split(", ")
     desired_designs = parts[1].splitlines()
     return available_patterns, desired_designs
 
@@ -39,21 +39,32 @@ class TowelDesigner:
         self._desired_designs = desired_designs
 
     def count_possible_designs(self):
-        return sum(1 for design in self._desired_designs if self._count_ways_to_form_design(design) > 0)
+        return sum(
+            1
+            for design in self._desired_designs
+            if self._count_ways_to_form_design(design) > 0
+        )
 
     def count_total_ways_to_form_all_designs(self):
-        return sum(self._count_ways_to_form_design(design) for design in self._desired_designs)
+        return sum(
+            self._count_ways_to_form_design(design) for design in self._desired_designs
+        )
 
     def _count_ways_to_form_design(self, design):
         # Dynamic Programming approach to count how many ways the design can be formed
         design_length = len(design)
-        ways = [0] * (design_length + 1)  # ways[i] is the number of ways to form design[:i]
+        ways = [0] * (
+            design_length + 1
+        )  # ways[i] is the number of ways to form design[:i]
         ways[0] = 1  # Base case: empty design can always be formed in one way
 
         # Iterate over each position in the design
         for end_index in range(1, design_length + 1):
             for start_index in range(end_index):
-                if ways[start_index] > 0 and design[start_index:end_index] in self._available_patterns:
+                if (
+                    ways[start_index] > 0
+                    and design[start_index:end_index] in self._available_patterns
+                ):
                     ways[end_index] += ways[start_index]
 
         return ways[design_length]  # The number of ways to form the entire design
@@ -71,7 +82,8 @@ def main():
 
 
 class TestAdventOfCode(unittest.TestCase):
-    PUZZLE_INPUT = textwrap.dedent("""
+    PUZZLE_INPUT = textwrap.dedent(
+        """
         r, wr, b, g, bwu, rb, gb, br
 
         brwrr
@@ -82,7 +94,8 @@ class TestAdventOfCode(unittest.TestCase):
         bwurrg
         brgr
         bbrgwb
-    """).strip()
+    """
+    ).strip()
 
     def test_part_one(self):
         expected_output = 6

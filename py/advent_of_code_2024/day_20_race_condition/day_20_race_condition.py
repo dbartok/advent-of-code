@@ -21,7 +21,10 @@ class HashableVector(Vector2):
 Vector = HashableVector
 
 
-def solve_part_one(puzzle_input, required_improvement_via_cheating=REAL_INPUT_REQUIRED_IMPROVEMENT_VIA_CHEATING):
+def solve_part_one(
+    puzzle_input,
+    required_improvement_via_cheating=REAL_INPUT_REQUIRED_IMPROVEMENT_VIA_CHEATING,
+):
     """
     Solve part one of the Advent of Code puzzle.
 
@@ -29,11 +32,16 @@ def solve_part_one(puzzle_input, required_improvement_via_cheating=REAL_INPUT_RE
     :return: Solution for part one
     """
     grid = puzzle_input.splitlines()
-    race_track = RaceTrack(grid, required_improvement_via_cheating, ALLOWED_CHEAT_LENGTH_PART_ONE)
+    race_track = RaceTrack(
+        grid, required_improvement_via_cheating, ALLOWED_CHEAT_LENGTH_PART_ONE
+    )
     return race_track.calculate_num_total_valid_cheats()
 
 
-def solve_part_two(puzzle_input, required_improvement_via_cheating=REAL_INPUT_REQUIRED_IMPROVEMENT_VIA_CHEATING):
+def solve_part_two(
+    puzzle_input,
+    required_improvement_via_cheating=REAL_INPUT_REQUIRED_IMPROVEMENT_VIA_CHEATING,
+):
     """
     Solve part two of the Advent of Code puzzle.
 
@@ -41,7 +49,9 @@ def solve_part_two(puzzle_input, required_improvement_via_cheating=REAL_INPUT_RE
     :return: Solution for part two
     """
     grid = puzzle_input.splitlines()
-    race_track = RaceTrack(grid, required_improvement_via_cheating, ALLOWED_CHEAT_LENGTH_PART_TWO)
+    race_track = RaceTrack(
+        grid, required_improvement_via_cheating, ALLOWED_CHEAT_LENGTH_PART_TWO
+    )
     return race_track.calculate_num_total_valid_cheats()
 
 
@@ -52,11 +62,15 @@ class RaceTrack:
         self._grid = grid
         self._required_improvement_via_cheating = required_improvement_via_cheating
         self._allowed_cheat_length = allowed_cheat_length
-        self._start_position = self._find_position('S')
-        self._end_position = self._find_position('E')
-        self._distances_from_start = self._get_distances_from_position(self._start_position)
+        self._start_position = self._find_position("S")
+        self._end_position = self._find_position("E")
+        self._distances_from_start = self._get_distances_from_position(
+            self._start_position
+        )
         self._distances_from_end = self._get_distances_from_position(self._end_position)
-        self._min_distance_without_cheating = self._distances_from_start[self._end_position]
+        self._min_distance_without_cheating = self._distances_from_start[
+            self._end_position
+        ]
 
     def calculate_num_total_valid_cheats(self):
         # Prefilter valid cheat start position to those that are within min_distance_without_cheating
@@ -79,7 +93,11 @@ class RaceTrack:
 
     def _is_valid_position(self, position):
         x, y = int(position.x), int(position.y)
-        return 0 <= x < len(self._grid[0]) and 0 <= y < len(self._grid) and self._grid[y][x] != '#'
+        return (
+            0 <= x < len(self._grid[0])
+            and 0 <= y < len(self._grid)
+            and self._grid[y][x] != "#"
+        )
 
     def _get_distances_from_position(self, start_position):
         queue = deque([(start_position, 0)])  # (position, time_taken)
@@ -104,9 +122,12 @@ class RaceTrack:
     def _count_num_valid_cheats_from_position(self, cheat_start_position):
         return sum(
             1
-            for cheat_end_position in self._get_valid_cheat_end_positions(cheat_start_position)
-            if
-            self._is_cheat_saving_enough_time(cheat_start_position, cheat_end_position)
+            for cheat_end_position in self._get_valid_cheat_end_positions(
+                cheat_start_position
+            )
+            if self._is_cheat_saving_enough_time(
+                cheat_start_position, cheat_end_position
+            )
         )
 
     def _get_valid_cheat_end_positions(self, cheat_start_position):
@@ -114,7 +135,8 @@ class RaceTrack:
             Vector(cheat_start_position.x + dx, cheat_start_position.y + dy)
             for dx, dy in self._get_cheat_offsets()
             if self._is_valid_position(
-                Vector(cheat_start_position.x + dx, cheat_start_position.y + dy))
+                Vector(cheat_start_position.x + dx, cheat_start_position.y + dy)
+            )
         ]
 
     def _get_cheat_offsets(self):
@@ -126,16 +148,23 @@ class RaceTrack:
         ]
 
     def _is_cheat_saving_enough_time(self, cheat_start_position, cheat_end_position):
-        distance_after_cheating = self._calculate_distance_after_cheating(cheat_start_position, cheat_end_position)
+        distance_after_cheating = self._calculate_distance_after_cheating(
+            cheat_start_position, cheat_end_position
+        )
         improvement = self._min_distance_without_cheating - distance_after_cheating
         return improvement >= self._required_improvement_via_cheating
 
-    def _calculate_distance_after_cheating(self, cheat_start_position, cheat_end_position):
-        cheat_distance = (abs(cheat_end_position.x - cheat_start_position.x)
-                          + abs(cheat_end_position.y - cheat_start_position.y))
-        return (self._distances_from_start[cheat_start_position]
-                + cheat_distance
-                + self._distances_from_end[cheat_end_position])
+    def _calculate_distance_after_cheating(
+        self, cheat_start_position, cheat_end_position
+    ):
+        cheat_distance = abs(cheat_end_position.x - cheat_start_position.x) + abs(
+            cheat_end_position.y - cheat_start_position.y
+        )
+        return (
+            self._distances_from_start[cheat_start_position]
+            + cheat_distance
+            + self._distances_from_end[cheat_end_position]
+        )
 
 
 def main():
@@ -150,7 +179,8 @@ def main():
 
 
 class TestAdventOfCode(unittest.TestCase):
-    PUZZLE_INPUT = textwrap.dedent("""
+    PUZZLE_INPUT = textwrap.dedent(
+        """
         ###############
         #...#...#.....#
         #.#.#.#.#.###.#
@@ -166,7 +196,8 @@ class TestAdventOfCode(unittest.TestCase):
         #.#.#.#.#.#.###
         #...#...#...###
         ###############
-    """).strip()
+    """
+    ).strip()
 
     def test_part_one(self):
         expected_output = 44

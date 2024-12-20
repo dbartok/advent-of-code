@@ -28,16 +28,16 @@ def solve_part_two(puzzle_input):
 
 
 def parse_input(puzzle_input):
-    rules_section, updates_section = puzzle_input.split('\n\n')
+    rules_section, updates_section = puzzle_input.split("\n\n")
 
     rules = []
     for line in rules_section.splitlines():
-        x, y = map(int, line.split('|'))
+        x, y = map(int, line.split("|"))
         rules.append((x, y))
 
     updates = []
     for line in updates_section.splitlines():
-        updates.append(list(map(int, line.split(','))))
+        updates.append(list(map(int, line.split(","))))
 
     return rules, updates
 
@@ -50,7 +50,8 @@ class UpdatesChecker:
     def _is_ordered(self, update):
         update_page_to_index = {page: index for index, page in enumerate(update)}
         return all(
-            update_page_to_index[x] <= update_page_to_index[y] for x, y in self._rules
+            update_page_to_index[x] <= update_page_to_index[y]
+            for x, y in self._rules
             if x in update_page_to_index and y in update_page_to_index
         )
 
@@ -64,7 +65,9 @@ class UpdatesChecker:
             page_to_following_pages[x].append(y)
             page_to_preceding_page_count[y] += 1
 
-        initial_pages_with_no_preceding_page = [page for page in update if page_to_preceding_page_count[page] == 0]
+        initial_pages_with_no_preceding_page = [
+            page for page in update if page_to_preceding_page_count[page] == 0
+        ]
         pages_with_no_preceding_page_queue = deque(initial_pages_with_no_preceding_page)
         sorted_update = []
 
@@ -84,12 +87,16 @@ class UpdatesChecker:
         return update[len(update) // 2]
 
     def get_sum_of_ordered_updates(self):
-        ordered_updates = [update for update in self._updates if self._is_ordered(update)]
+        ordered_updates = [
+            update for update in self._updates if self._is_ordered(update)
+        ]
         return sum(self._get_middle_page(update) for update in ordered_updates)
 
     def get_sum_of_reordered_updates(self):
         reordered_updates = [
-            self._get_topological_sorted_update(update) for update in self._updates if not self._is_ordered(update)
+            self._get_topological_sorted_update(update)
+            for update in self._updates
+            if not self._is_ordered(update)
         ]
         return sum(self._get_middle_page(update) for update in reordered_updates)
 
@@ -106,7 +113,8 @@ def main():
 
 
 class TestAdventOfCode(unittest.TestCase):
-    PUZZLE_INPUT = textwrap.dedent("""
+    PUZZLE_INPUT = textwrap.dedent(
+        """
         47|53
         97|13
         97|61
@@ -135,7 +143,8 @@ class TestAdventOfCode(unittest.TestCase):
         75,97,47,61,53
         61,13,29
         97,13,75,29,47
-    """).strip()
+    """
+    ).strip()
 
     def test_part_one(self):
         expected_output = 143

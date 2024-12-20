@@ -32,7 +32,7 @@ def solve_recursive(program, required_match_length, register_a_base_value):
     for current_three_bit_digit in range(8):
         register_a = register_a_base_value + current_three_bit_digit
         output = run_reverse_engineered_program(register_a)
-        output_list = list(map(int, output.split(','))) if output else []
+        output_list = list(map(int, output.split(","))) if output else []
 
         # We build up register A to produce progressively larger suffixes of the output when fed into the program.
         # Therefore, we need to start by matching the last output digit, then the last two, and so on,
@@ -44,7 +44,9 @@ def solve_recursive(program, required_match_length, register_a_base_value):
                 return register_a
             # Recurse to find a larger matching portion of the program
             else:
-                return solve_recursive(program, required_match_length + 1, register_a * 8)
+                return solve_recursive(
+                    program, required_match_length + 1, register_a * 8
+                )
 
 
 # Manually reverse engineered version of the program for understandability.
@@ -69,7 +71,7 @@ def run_reverse_engineered_program(register_a):
 
         # Instruction: 7, 5
         # cdv - Store A // 2^B in register C
-        c = a // (2 ** b)
+        c = a // (2**b)
 
         # Instruction: 4, 5
         # bxc - XOR register B with register C
@@ -102,7 +104,7 @@ def parse_input(puzzle_input):
     program_pattern = r"Program:\s*(.*)"
     match = re.search(program_pattern, puzzle_input)
     program_str = match.group(1)
-    program = list(map(int, program_str.split(',')))
+    program = list(map(int, program_str.split(",")))
 
     return register_a, register_b, register_c, program
 
@@ -150,7 +152,7 @@ class ThreeBitComputer:
     # adv instruction (opcode 0)
     def _adv(self, operand):
         operand = self._resolve_combo_operand(operand)
-        denominator = 2 ** operand
+        denominator = 2**operand
         self.register_a //= denominator
 
     # bxl instruction (opcode 1)
@@ -180,13 +182,13 @@ class ThreeBitComputer:
     # bdv instruction (opcode 6)
     def _bdv(self, operand):
         operand = self._resolve_combo_operand(operand)
-        denominator = 2 ** operand
+        denominator = 2**operand
         self.register_b = self.register_a // denominator
 
     # cdv instruction (opcode 7)
     def _cdv(self, operand):
         operand = self._resolve_combo_operand(operand)
-        denominator = 2 ** operand
+        denominator = 2**operand
         self.register_c = self.register_a // denominator
 
     def _resolve_combo_operand(self, operand):
@@ -213,13 +215,15 @@ def main():
 
 class TestAdventOfCode(unittest.TestCase):
     def test_part_one(self):
-        puzzle_input = textwrap.dedent("""
+        puzzle_input = textwrap.dedent(
+            """
             Register A: 729
             Register B: 0
             Register C: 0
 
             Program: 0,1,5,4,3,0
-        """).strip()
+        """
+        ).strip()
         expected_output = "4,6,3,5,6,3,5,2,1,0"
         self.assertEqual(expected_output, solve_part_one(puzzle_input))
 

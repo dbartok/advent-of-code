@@ -48,12 +48,16 @@ class WordSearch:
         self._width = len(grid[0])
 
     def get_count(self):
-        start_positions = [(x, y) for y in range(self._height) for x in range(self._width)]
+        start_positions = [
+            (x, y) for y in range(self._height) for x in range(self._width)
+        ]
         count = 0
 
-        for (x, y) in start_positions:
+        for x, y in start_positions:
             for direction_delta in self.DIRECTIONS:
-                word_in_direction = self._get_word_in_direction(Vector(x, y), direction_delta)
+                word_in_direction = self._get_word_in_direction(
+                    Vector(x, y), direction_delta
+                )
                 if word_in_direction == self._target_word:
                     count += 1
 
@@ -69,19 +73,23 @@ class WordSearch:
             word.append(self._grid[int(position.y)][int(position.x)])
             position += direction_delta
 
-        return ''.join(word)
+        return "".join(word)
 
 
 class XShapeWordSearch(WordSearch):
     def get_count(self):
-        center_positions = [(x, y) for y in range(1, self._height - 1) for x in range(1, self._width - 1)]
+        center_positions = [
+            (x, y)
+            for y in range(1, self._height - 1)
+            for x in range(1, self._width - 1)
+        ]
         assert len(self._target_word) == 3
         start_char = self._target_word[0]
         center_char = self._target_word[1]
         end_char = self._target_word[2]
         count = 0
 
-        for (x, y) in center_positions:
+        for x, y in center_positions:
             if self._grid[y][x] != center_char:
                 continue
 
@@ -89,17 +97,12 @@ class XShapeWordSearch(WordSearch):
             top_right = self._grid[y - 1][x + 1]
             bottom_left = self._grid[y + 1][x - 1]
             bottom_right = self._grid[y + 1][x + 1]
-            corner_characters = [
-                top_left,
-                top_right,
-                bottom_left,
-                bottom_right
-            ]
+            corner_characters = [top_left, top_right, bottom_left, bottom_right]
 
             if (
-                    corner_characters.count(start_char) == 2
-                    and corner_characters.count(end_char) == 2
-                    and top_left != bottom_right
+                corner_characters.count(start_char) == 2
+                and corner_characters.count(end_char) == 2
+                and top_left != bottom_right
             ):
                 count += 1
 
@@ -118,7 +121,8 @@ def main():
 
 
 class TestAdventOfCode(unittest.TestCase):
-    PUZZLE_INPUT = textwrap.dedent("""
+    PUZZLE_INPUT = textwrap.dedent(
+        """
             MMMSXXMASM
             MSAMXMSMSA
             AMXSXMAAMM
@@ -129,7 +133,8 @@ class TestAdventOfCode(unittest.TestCase):
             SAXAMASAAA
             MAMMMXMMMM
             MXMXAXMASX
-        """).strip()
+        """
+    ).strip()
 
     def test_part_one(self):
         expected_output = 18

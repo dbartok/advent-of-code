@@ -72,11 +72,11 @@ class WarehouseRobot:
             cell = grid[y][x]
 
             position = Vector(x, y)
-            if cell == '@':
+            if cell == "@":
                 self._robot_position = position
-            elif cell == '#':
+            elif cell == "#":
                 self._wall_positions.add(position)
-            elif cell == 'O' or cell == '[':
+            elif cell == "O" or cell == "[":
                 self._box_positions.add(position)
 
         self._moves = moves
@@ -87,7 +87,12 @@ class WarehouseRobot:
             self._move_robot(direction)
 
     def compute_gps_sum(self):
-        return int(sum(100 * box_position.y + box_position.x for box_position in self._box_positions))
+        return int(
+            sum(
+                100 * box_position.y + box_position.x
+                for box_position in self._box_positions
+            )
+        )
 
     def _move_robot(self, direction):
         boxes_pushed = self.identify_pushed_boxes(direction)
@@ -100,7 +105,10 @@ class WarehouseRobot:
         potential_box_position = self._robot_position + direction
         boxes_pushed = []
 
-        while potential_box_position not in self._wall_positions and potential_box_position in self._box_positions:
+        while (
+            potential_box_position not in self._wall_positions
+            and potential_box_position in self._box_positions
+        ):
             boxes_pushed.append(deepcopy(potential_box_position))
             potential_box_position += direction
 
@@ -123,13 +131,13 @@ class WarehouseRobot:
             self._box_positions.add(new_pos)
 
     def _get_direction(self, move):
-        if move == '>':
+        if move == ">":
             return self.RIGHT
-        elif move == '<':
+        elif move == "<":
             return self.LEFT
-        elif move == '^':
+        elif move == "^":
             return self.UP
-        elif move == 'v':
+        elif move == "v":
             return self.DOWN
 
 
@@ -149,23 +157,28 @@ class WideWareHouseRobot(WarehouseRobot):
             new_row = []
             for x in range(width):
                 cell = grid[y][x]
-                if cell == '#':
-                    new_row.append('##')
-                elif cell == 'O':
-                    new_row.append('[]')
-                elif cell == '.':
-                    new_row.append('..')
-                elif cell == '@':
-                    new_row.append('@.')
-            new_grid.append(''.join(new_row))
+                if cell == "#":
+                    new_row.append("##")
+                elif cell == "O":
+                    new_row.append("[]")
+                elif cell == ".":
+                    new_row.append("..")
+                elif cell == "@":
+                    new_row.append("@.")
+            new_grid.append("".join(new_row))
 
         return new_grid
 
     def identify_pushed_boxes(self, direction):
         boxes_to_process_queue = deque()
 
-        for offset in [0, 1]:  # 0 for the left side of the box, 1 for the right side of the box
-            potential_pushed_box_position = self._robot_position + direction - Vector(offset, 0)
+        for offset in [
+            0,
+            1,
+        ]:  # 0 for the left side of the box, 1 for the right side of the box
+            potential_pushed_box_position = (
+                self._robot_position + direction - Vector(offset, 0)
+            )
             if potential_pushed_box_position in self._box_positions:
                 boxes_to_process_queue.append(potential_pushed_box_position)
 
@@ -191,14 +204,21 @@ class WideWareHouseRobot(WarehouseRobot):
         potential_neighbor_box_positions = [
             box_to_process + direction,
             box_to_process + direction + Vector(-1, 0),
-            box_to_process + direction + Vector(1, 0)
+            box_to_process + direction + Vector(1, 0),
         ]
 
-        actual_neighbor_boxes = [box for box in potential_neighbor_box_positions if box in self._box_positions]
+        actual_neighbor_boxes = [
+            box
+            for box in potential_neighbor_box_positions
+            if box in self._box_positions
+        ]
         return actual_neighbor_boxes
 
     def _can_push_box(self, box, direction):
-        return all((box + direction + offset) not in self._wall_positions for offset in [Vector(0, 0), Vector(1, 0)])
+        return all(
+            (box + direction + offset) not in self._wall_positions
+            for offset in [Vector(0, 0), Vector(1, 0)]
+        )
 
 
 def main():
@@ -213,7 +233,8 @@ def main():
 
 
 class TestAdventOfCode(unittest.TestCase):
-    PUZZLE_INPUT = textwrap.dedent("""
+    PUZZLE_INPUT = textwrap.dedent(
+        """
         ##########
         #..O..O.O#
         #......O.#
@@ -235,7 +256,8 @@ class TestAdventOfCode(unittest.TestCase):
         <><^^>^^^<><vvvvv^v<v<<>^v<v>v<<^><<><<><<<^^<<<^<<>><<><^^^>^^<>^>v<>
         ^^>vv<^v^v<vv>^<><v<^v>^^^>>>^^vvv^>vvv<>>>^<^>>>>>^<<^v>^vvv<>^<><<v>
         v^^>>><<^^<>>^v^<v^vv<>v^<<>^<^v^v><^<<<><<^<v><v<>vv>>v><v^<vv<>v^<<^
-            """).strip()
+            """
+    ).strip()
 
     def test_part_one(self):
         expected_output = 10092

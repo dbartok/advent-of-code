@@ -11,7 +11,7 @@ def solve_part_one(puzzle_input):
     :return: Solution for part one
     """
     equations = parse_input(puzzle_input)
-    solver = CalibrationEquationSolver(equations, ['+', '*'])
+    solver = CalibrationEquationSolver(equations, ["+", "*"])
     return solver.get_sum_of_valid_test_values()
 
 
@@ -23,7 +23,7 @@ def solve_part_two(puzzle_input):
     :return: Solution for part two
     """
     equations = parse_input(puzzle_input)
-    solver = CalibrationEquationSolver(equations, ['+', '*', '||'])
+    solver = CalibrationEquationSolver(equations, ["+", "*", "||"])
     return solver.get_sum_of_valid_test_values()
 
 
@@ -41,7 +41,9 @@ def parse_input(puzzle_input):
 
 class CalibrationEquationSolver:
     def __init__(self, equations, operators):
-        self._equations = equations  # List of tuples, each containing (test_value, numbers)
+        self._equations = (
+            equations  # List of tuples, each containing (test_value, numbers)
+        )
         self._operators = operators  # List of operators (e.g., ['+', '*', '||'])
 
     def get_sum_of_valid_test_values(self):
@@ -49,11 +51,16 @@ class CalibrationEquationSolver:
 
         for test_value, numbers in self._equations:
             num_operators = len(numbers) - 1
-            operator_combinations = itertools.product(self._operators, repeat=num_operators)
+            operator_combinations = itertools.product(
+                self._operators, repeat=num_operators
+            )
 
             if any(
-                    CalibrationEquationSolver._evaluate_expression(numbers, operator_combination) == test_value
-                    for operator_combination in operator_combinations
+                CalibrationEquationSolver._evaluate_expression(
+                    numbers, operator_combination
+                )
+                == test_value
+                for operator_combination in operator_combinations
             ):
                 sum_of_valid_test_values += test_value
 
@@ -66,11 +73,11 @@ class CalibrationEquationSolver:
         for i in range(1, len(numbers)):
             operator = operators[i - 1]
 
-            if operator == '+':
+            if operator == "+":
                 result += numbers[i]
-            elif operator == '*':
+            elif operator == "*":
                 result *= numbers[i]
-            elif operator == '||':
+            elif operator == "||":
                 result = int(str(result) + str(numbers[i]))
 
         return result
@@ -88,7 +95,8 @@ def main():
 
 
 class TestAdventOfCode(unittest.TestCase):
-    PUZZLE_INPUT = textwrap.dedent("""
+    PUZZLE_INPUT = textwrap.dedent(
+        """
         190: 10 19
         3267: 81 40 27
         83: 17 5
@@ -98,7 +106,8 @@ class TestAdventOfCode(unittest.TestCase):
         192: 17 8 14
         21037: 9 7 18 13
         292: 11 6 16 20
-    """).strip()
+    """
+    ).strip()
 
     def test_part_one(self):
         expected_output = 3749

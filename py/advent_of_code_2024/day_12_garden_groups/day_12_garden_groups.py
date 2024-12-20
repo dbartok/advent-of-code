@@ -44,7 +44,12 @@ def solve_part_two(puzzle_input):
 
 
 class GardenPlotPlanner:
-    DIRECTIONS = [Vector(0, -1), Vector(0, 1), Vector(-1, 0), Vector(1, 0)]  # Up, Down, Left, Right
+    DIRECTIONS = [
+        Vector(0, -1),
+        Vector(0, 1),
+        Vector(-1, 0),
+        Vector(1, 0),
+    ]  # Up, Down, Left, Right
 
     def __init__(self, grid):
         self._grid = grid
@@ -88,8 +93,8 @@ class GardenPlotPlanner:
                 neighbor_position
                 for neighbor_position in self._get_neighbor_positions(position)
                 if self._is_in_bounds(neighbor_position)
-                   and neighbor_position not in self._visited
-                   and self._get_plant_at(neighbor_position) == plant_type
+                and neighbor_position not in self._visited
+                and self._get_plant_at(neighbor_position) == plant_type
             ]
 
             for neighbor_position in valid_neighbor_positions:
@@ -112,7 +117,8 @@ class GardenPlotPlanner:
             1
             for position in region
             for neighbor_position in self._get_neighbor_positions(position)
-            if not self._is_in_bounds(neighbor_position) or neighbor_position not in region
+            if not self._is_in_bounds(neighbor_position)
+            or neighbor_position not in region
         )
 
 
@@ -141,8 +147,9 @@ class GardenPlotPlannerWithDiscount(GardenPlotPlanner):
 
         for position in region:
             neighbor_position = position + direction
-            if (not self._is_in_bounds(neighbor_position)
-                    or self._get_plant_at(neighbor_position) != self._get_plant_at(position)):
+            if not self._is_in_bounds(neighbor_position) or self._get_plant_at(
+                neighbor_position
+            ) != self._get_plant_at(position):
                 edge_positions.add(neighbor_position)
 
         return edge_positions
@@ -188,7 +195,8 @@ def main():
 
 
 class TestAdventOfCode(unittest.TestCase):
-    PUZZLE_INPUT = textwrap.dedent("""
+    PUZZLE_INPUT = textwrap.dedent(
+        """
         RRRRIICCFF
         RRRRIICCCF
         VVRRRCCFFF
@@ -199,7 +207,8 @@ class TestAdventOfCode(unittest.TestCase):
         MIIIIIJJEE
         MIIISIJEEE
         MMMISSJEEE
-    """).strip()
+    """
+    ).strip()
 
     def test_part_one(self):
         expected_output = 1930

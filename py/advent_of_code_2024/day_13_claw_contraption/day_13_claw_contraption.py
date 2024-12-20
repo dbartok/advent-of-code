@@ -57,7 +57,7 @@ class ClawMachine:
 
     def solve_equation(self):
         # Define symbols for the button presses A and B
-        A, B = sp.symbols('A B')
+        A, B = sp.symbols("A B")
 
         # Define the Diophantine equation for both axes
         eq_x = self.a_x * A + self.b_x * B - self.p_x
@@ -114,7 +114,8 @@ def main():
 
 
 class TestAdventOfCode(unittest.TestCase):
-    PUZZLE_INPUT = textwrap.dedent("""
+    PUZZLE_INPUT = textwrap.dedent(
+        """
             Button A: X+94, Y+34
             Button B: X+22, Y+67
             Prize: X=8400, Y=5400
@@ -130,7 +131,8 @@ class TestAdventOfCode(unittest.TestCase):
             Button A: X+69, Y+23
             Button B: X+27, Y+71
             Prize: X=18641, Y=10279
-        """).strip()
+        """
+    ).strip()
 
     def test_part_one(self):
         expected_output = 480
