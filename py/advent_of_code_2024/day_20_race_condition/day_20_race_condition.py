@@ -3,6 +3,10 @@ import unittest
 from pygame.math import Vector2
 from collections import deque
 
+REAL_INPUT_REQUIRED_IMPROVEMENT_VIA_CHEATING = 100
+ALLOWED_CHEAT_LENGTH_PART_ONE = 2
+ALLOWED_CHEAT_LENGTH_PART_TWO = 20
+
 
 class HashableVector(Vector2):
     def __hash__(self):
@@ -17,7 +21,7 @@ class HashableVector(Vector2):
 Vector = HashableVector
 
 
-def solve_part_one(puzzle_input, required_improvement_via_cheating=100):
+def solve_part_one(puzzle_input, required_improvement_via_cheating=REAL_INPUT_REQUIRED_IMPROVEMENT_VIA_CHEATING):
     """
     Solve part one of the Advent of Code puzzle.
 
@@ -25,18 +29,20 @@ def solve_part_one(puzzle_input, required_improvement_via_cheating=100):
     :return: Solution for part one
     """
     grid = puzzle_input.splitlines()
-    race_track = RaceTrack(grid, required_improvement_via_cheating, 2)
+    race_track = RaceTrack(grid, required_improvement_via_cheating, ALLOWED_CHEAT_LENGTH_PART_ONE)
     return race_track.calculate_num_total_valid_cheats()
 
 
-def solve_part_two(puzzle_input):
+def solve_part_two(puzzle_input, required_improvement_via_cheating=REAL_INPUT_REQUIRED_IMPROVEMENT_VIA_CHEATING):
     """
     Solve part two of the Advent of Code puzzle.
 
     :param puzzle_input: The input data as string
     :return: Solution for part two
     """
-    pass
+    grid = puzzle_input.splitlines()
+    race_track = RaceTrack(grid, required_improvement_via_cheating, ALLOWED_CHEAT_LENGTH_PART_TWO)
+    return race_track.calculate_num_total_valid_cheats()
 
 
 class RaceTrack:
@@ -144,29 +150,31 @@ def main():
 
 
 class TestAdventOfCode(unittest.TestCase):
+    PUZZLE_INPUT = textwrap.dedent("""
+        ###############
+        #...#...#.....#
+        #.#.#.#.#.###.#
+        #S#...#.#.#...#
+        #######.#.#.###
+        #######.#.#...#
+        #######.#.###.#
+        ###..E#...#...#
+        ###.#######.###
+        #...###...#...#
+        #.#####.#.###.#
+        #.#...#.#.#...#
+        #.#.#.#.#.#.###
+        #...#...#...###
+        ###############
+    """).strip()
+
     def test_part_one(self):
-        puzzle_input = textwrap.dedent("""
-            ###############
-            #...#...#.....#
-            #.#.#.#.#.###.#
-            #S#...#.#.#...#
-            #######.#.#.###
-            #######.#.#...#
-            #######.#.###.#
-            ###..E#...#...#
-            ###.#######.###
-            #...###...#...#
-            #.#####.#.###.#
-            #.#...#.#.#...#
-            #.#.#.#.#.#.###
-            #...#...#...###
-            ###############
-        """).strip()
         expected_output = 44
-        self.assertEqual(expected_output, solve_part_one(puzzle_input, 2))
+        self.assertEqual(expected_output, solve_part_one(self.PUZZLE_INPUT, 2))
 
     def test_part_two(self):
-        pass
+        expected_output = 285
+        self.assertEqual(expected_output, solve_part_two(self.PUZZLE_INPUT, 50))
 
 
 if __name__ == "__main__":
