@@ -43,3 +43,6 @@ Test/
 
 # PyCharm
 .idea
+
+# Images
+*.png
