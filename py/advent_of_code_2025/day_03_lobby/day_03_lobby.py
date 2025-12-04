@@ -1,0 +1,59 @@
+import textwrap
+import unittest
+
+
+def solve_part_one(puzzle_input):
+    """
+    Solve part one of the Advent of Code puzzle.
+
+    :param puzzle_input: The input data as string
+    :return: Solution for part one
+    """
+    return sum(max_joltage_from_bank(line) for line in puzzle_input.splitlines())
+
+
+def solve_part_two(puzzle_input):
+    """
+    Solve part two of the Advent of Code puzzle.
+
+    :param puzzle_input: The input data as string
+    :return: Solution for part two
+    """
+    pass
+
+
+def max_joltage_from_bank(digits):
+    return max(int(d1 + d2) for i, d1 in enumerate(digits) for d2 in digits[i + 1:])
+
+
+def main():
+    with open("./input.txt") as f:
+        puzzle_input = f.read().strip()
+
+    part_one_result = solve_part_one(puzzle_input)
+    print(f"Part One: {part_one_result}")
+
+    part_two_result = solve_part_two(puzzle_input)
+    print(f"Part Two: {part_two_result}")
+
+
+class TestAdventOfCode(unittest.TestCase):
+    def test_part_one(self):
+        puzzle_input = textwrap.dedent(
+            """
+            987654321111111
+            811111111111119
+            234234234234278
+            818181911112111
+            """
+        ).strip()
+        expected_output = 357
+        self.assertEqual(expected_output, solve_part_one(puzzle_input))
+
+    def test_part_two(self):
+        pass
+
+
+if __name__ == "__main__":
+    # unittest.main() # Uncomment to run unit tests
+    main()
