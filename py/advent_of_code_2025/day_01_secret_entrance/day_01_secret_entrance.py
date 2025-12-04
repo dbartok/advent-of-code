@@ -1,6 +1,8 @@
 import textwrap
 import unittest
 
+STARTING_POSITION = 50
+
 
 def solve_part_one(puzzle_input):
     """
@@ -9,7 +11,7 @@ def solve_part_one(puzzle_input):
     :param puzzle_input: The input data as string
     :return: Solution for part one
     """
-    position = 50
+    position = STARTING_POSITION
     zero_count = 0
 
     for line in puzzle_input.splitlines():
@@ -32,7 +34,20 @@ def solve_part_two(puzzle_input):
     :param puzzle_input: The input data as string
     :return: Solution for part two
     """
-    pass
+    position = STARTING_POSITION
+    zero_count = 0
+
+    for line in puzzle_input.splitlines():
+        direction = line[0]
+        distance = int(line[1:])
+        step = -1 if direction == "L" else 1
+
+        for _ in range(distance):
+            position = (position + step) % 100
+            if position == 0:
+                zero_count += 1
+
+    return zero_count
 
 
 def main():
@@ -47,26 +62,28 @@ def main():
 
 
 class TestAdventOfCode(unittest.TestCase):
-    def test_part_one(self):
-        puzzle_input = textwrap.dedent(
-            """
-            L68
-            L30
-            R48
-            L5
-            R60
-            L55
-            L1
-            L99
-            R14
-            L82
+    PUZZLE_INPUT = textwrap.dedent(
         """
-        ).strip()
+        L68
+        L30
+        R48
+        L5
+        R60
+        L55
+        L1
+        L99
+        R14
+        L82
+        """
+    ).strip()
+
+    def test_part_one(self):
         expected_output = 3
-        self.assertEqual(expected_output, solve_part_one(puzzle_input))
+        self.assertEqual(expected_output, solve_part_one(self.PUZZLE_INPUT))
 
     def test_part_two(self):
-        pass
+        expected_output = 6
+        self.assertEqual(expected_output, solve_part_two(self.PUZZLE_INPUT))
 
 
 if __name__ == "__main__":
