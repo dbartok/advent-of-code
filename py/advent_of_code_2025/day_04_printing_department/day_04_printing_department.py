@@ -21,7 +21,9 @@ def solve_part_two(puzzle_input):
     :param puzzle_input: The input data as string
     :return: Solution for part two
     """
-    pass
+    grid = [list(row) for row in puzzle_input.splitlines()]
+    optimizer = ForkliftOptimizer(grid)
+    return optimizer.get_total_removable_roll_count()
 
 
 class ForkliftOptimizer:
@@ -31,12 +33,25 @@ class ForkliftOptimizer:
         self._width = len(grid[0])
 
     def get_accessible_roll_count(self):
-        return sum(
-            1
+        return len(self._get_accessible_positions())
+
+    def get_total_removable_roll_count(self):
+        total_removed_count = 0
+
+        while removable_positions := self._get_accessible_positions():
+            total_removed_count += len(removable_positions)
+            for x, y in removable_positions:
+                self._grid[y][x] = '.'  # Remove the roll
+
+        return total_removed_count
+
+    def _get_accessible_positions(self):
+        return [
+            (x, y)
             for y in range(self._height)
             for x in range(self._width)
             if self._grid[y][x] == '@' and self._get_adjacent_roll_count(x, y) < 4
-        )
+        ]
 
     def _get_adjacent_roll_count(self, x, y):
         neighbors = [
@@ -67,26 +82,28 @@ def main():
 
 
 class TestAdventOfCode(unittest.TestCase):
-    def test_part_one(self):
-        puzzle_input = textwrap.dedent(
-            """
-            ..@@.@@@@.
-            @@@.@.@.@@
-            @@@@@.@.@@
-            @.@@@@..@.
-            @@.@@@@.@@
-            .@@@@@@@.@
-            .@.@.@.@@@
-            @.@@@.@@@@
-            .@@@@@@@@.
-            @.@.@@@.@.
+    PUZZLE_INPUT = textwrap.dedent(
         """
-        ).strip()
+        ..@@.@@@@.
+        @@@.@.@.@@
+        @@@@@.@.@@
+        @.@@@@..@.
+        @@.@@@@.@@
+        .@@@@@@@.@
+        .@.@.@.@@@
+        @.@@@.@@@@
+        .@@@@@@@@.
+        @.@.@@@.@.
+    """
+    ).strip()
+
+    def test_part_one(self):
         expected_output = 13
-        self.assertEqual(expected_output, solve_part_one(puzzle_input))
+        self.assertEqual(expected_output, solve_part_one(self.PUZZLE_INPUT))
 
     def test_part_two(self):
-        pass
+        expected_output = 43
+        self.assertEqual(expected_output, solve_part_two(self.PUZZLE_INPUT))
 
 
 if __name__ == "__main__":
