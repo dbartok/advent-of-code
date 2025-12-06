@@ -20,7 +20,8 @@ def solve_part_two(puzzle_input):
     :param puzzle_input: The input data as string
     :return: Solution for part two
     """
-    pass
+    ranges, ids = parse_input(puzzle_input)
+    return InventorySystem(ranges, ids).count_coverage()
 
 
 def parse_input(puzzle_input):
@@ -40,26 +41,36 @@ class InventorySystem:
     def __init__(self, ranges, ids):
         self._ranges = ranges
         self._ids = ids
-        self._merged = self._merge_ranges(self._ranges)
+        self._merge_ranges()
 
     def count_fresh(self):
         return sum(1 for x in self._ids if self._is_fresh(x))
 
-    def _merge_ranges(self, ranges):
-        if not ranges:
-            return []
-        ranges = sorted(ranges)
-        merged = [ranges[0]]
-        for a, b in ranges[1:]:
-            la, lb = merged[-1]
-            if a <= lb + 1:
-                merged[-1] = (la, max(lb, b))
+    def count_coverage(self):
+        total = 0
+        for begin, end in self._ranges:
+            total += (end - begin + 1)
+        return total
+
+    def _merge_ranges(self):
+        if not self._ranges:
+            self._ranges = []
+            return
+
+        sorted_ranges = sorted(self._ranges)
+        merged = [sorted_ranges[0]]
+
+        for begin, end in sorted_ranges[1:]:
+            last_begin, last_end = merged[-1]
+            if begin <= last_end + 1:
+                merged[-1] = (last_begin, max(last_end, end))
             else:
-                merged.append((a, b))
-        return merged
+                merged.append((begin, end))
+
+        self._ranges = merged
 
     def _is_fresh(self, x):
-        for a, b in self._merged:
+        for a, b in self._ranges:
             if a <= x <= b:
                 return True
         return False
@@ -77,27 +88,29 @@ def main():
 
 
 class TestAdventOfCode(unittest.TestCase):
+    PUZZLE_INPUT = textwrap.dedent(
+        """
+        3-5
+        10-14
+        16-20
+        12-18
+
+        1
+        5
+        8
+        11
+        17
+        32
+        """
+    ).strip()
+
     def test_part_one(self):
-        puzzle_input = textwrap.dedent(
-            """
-            3-5
-            10-14
-            16-20
-            12-18
-        
-            1
-            5
-            8
-            11
-            17
-            32
-            """
-        ).strip()
         expected_output = 3
-        self.assertEqual(expected_output, solve_part_one(puzzle_input))
+        self.assertEqual(expected_output, solve_part_one(self.PUZZLE_INPUT))
 
     def test_part_two(self):
-        pass
+        expected_output = 14
+        self.assertEqual(expected_output, solve_part_two(self.PUZZLE_INPUT))
 
 
 if __name__ == "__main__":
