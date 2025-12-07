@@ -31,7 +31,39 @@ def solve_part_two(puzzle_input):
     :param puzzle_input: The input data as string
     :return: Solution for part two
     """
-    pass
+    # Build raw grid of characters
+    grid = puzzle_input.splitlines()
+    width = len(grid[0])
+    height = len(grid)
+
+    # Extract blocks of contiguous non-separator columns
+    blocks_column_indices = []
+    start = 0
+    for x in range(width):
+        if all(grid[y][x] == " " for y in range(height)):
+            blocks_column_indices.append(range(start, x))
+            start = x + 1
+
+    # Add the last block
+    blocks_column_indices.append(range(start, width))
+
+    total = 0
+    for block_column_indices in blocks_column_indices:
+        # Operator is bottom row, first column
+        op = grid[height - 1][block_column_indices[0]]
+
+        nums = []
+        for y in block_column_indices:
+            digits = [grid[x][y] for x in range(height - 1)]
+            digits = "".join(d for d in digits if d != " ")
+            nums.append(int(digits))
+
+        if op == "+":
+            total += sum(nums)
+        else:
+            total += math.prod(nums)
+
+    return total
 
 
 def main():
@@ -46,21 +78,22 @@ def main():
 
 
 class TestAdventOfCode(unittest.TestCase):
-    def test_part_one(self):
-        puzzle_input = textwrap.dedent(
-            """
-            123 328  51 64 
-             45 64  387 23 
-              6 98  215 314
-            *   +   *   +  
-            """
-        ).strip("\n")
+    PUZZLE_INPUT = textwrap.dedent(
+        """
+        123 328  51 64 
+         45 64  387 23 
+          6 98  215 314
+        *   +   *   +  
+        """
+    ).strip("\n")
 
+    def test_part_one(self):
         expected = 33210 + 490 + 4243455 + 401
-        self.assertEqual(expected, solve_part_one(puzzle_input))
+        self.assertEqual(expected, solve_part_one(self.PUZZLE_INPUT))
 
     def test_part_two(self):
-        pass
+        expected = 1058 + 3253600 + 625 + 8544
+        self.assertEqual(expected, solve_part_two(self.PUZZLE_INPUT))
 
 
 if __name__ == "__main__":
