@@ -1,3 +1,4 @@
+import sys
 import textwrap
 import unittest
 from math import sqrt
@@ -27,7 +28,10 @@ def solve_part_two(puzzle_input):
     :param puzzle_input: The input data as string
     :return: Solution for part two
     """
-    pass
+    points = [tuple(map(int, line.split(","))) for line in puzzle_input.strip().splitlines()]
+    simulator = CircuitSimulator(points)
+    simulator.connect_closest_pairs()
+    return simulator.get_x_coordinates_product_of_final_connected_points()
 
 
 class CircuitSimulator:
@@ -39,7 +43,9 @@ class CircuitSimulator:
         self._point_id_to_parent_id = list(range(self._n))
         self._root_id_to_component_size = [1] * self._n
 
-    def connect_closest_pairs(self, max_nodes_to_connect):
+        self._x_coordinates_product_of_final_connected_points = None
+
+    def connect_closest_pairs(self, max_nodes_to_connect=sys.maxsize):
         edges = []
         for i, j in combinations(range(self._n), 2):
             distance = self._get_distance(self._points[i], self._points[j])
@@ -50,6 +56,11 @@ class CircuitSimulator:
             i, j, _ = edges[n]
             self._union(i, j)
 
+            # All nodes connected
+            if self._root_id_to_component_size[self._find(i)] == self._n:
+                self._x_coordinates_product_of_final_connected_points = self._points[i][0] * self._points[j][0]
+                break
+
     def get_product_of_largest_three_components(self):
         # Collect sizes of all components
         roots = [self._find(i) for i in range(self._n)]
@@ -59,6 +70,9 @@ class CircuitSimulator:
         sizes = sorted(root_to_component_size.values(), reverse=True)
 
         return prod(sizes[:3])
+
+    def get_x_coordinates_product_of_final_connected_points(self):
+        return self._x_coordinates_product_of_final_connected_points
 
     def _find(self, x):
         if self._point_id_to_parent_id[x] != x:
@@ -91,36 +105,38 @@ def main():
 
 
 class TestAdventOfCode(unittest.TestCase):
-    def test_part_one(self):
-        puzzle_input = textwrap.dedent(
-            """
-            162,817,812
-            57,618,57
-            906,360,560
-            592,479,940
-            352,342,300
-            466,668,158
-            542,29,236
-            431,825,988
-            739,650,466
-            52,470,668
-            216,146,977
-            819,987,18
-            117,168,530
-            805,96,715
-            346,949,466
-            970,615,88
-            941,993,340
-            862,61,35
-            984,92,344
-            425,690,689
+    PUZZLE_INPUT = textwrap.dedent(
         """
-        ).strip()
+        162,817,812
+        57,618,57
+        906,360,560
+        592,479,940
+        352,342,300
+        466,668,158
+        542,29,236
+        431,825,988
+        739,650,466
+        52,470,668
+        216,146,977
+        819,987,18
+        117,168,530
+        805,96,715
+        346,949,466
+        970,615,88
+        941,993,340
+        862,61,35
+        984,92,344
+        425,690,689
+    """
+    ).strip()
+
+    def test_part_one(self):
         expected_output = 40
-        self.assertEqual(expected_output, solve_part_one(puzzle_input, 10))
+        self.assertEqual(expected_output, solve_part_one(self.PUZZLE_INPUT, 10))
 
     def test_part_two(self):
-        pass
+        expected_output = 25272
+        self.assertEqual(expected_output, solve_part_two(self.PUZZLE_INPUT))
 
 
 if __name__ == "__main__":
