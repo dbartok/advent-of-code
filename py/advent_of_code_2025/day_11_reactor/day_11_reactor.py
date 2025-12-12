@@ -88,7 +88,7 @@ class TestAdventOfCode(unittest.TestCase):
             ggg: out
             hhh: ccc fff iii
             iii: out
-        """
+            """
         ).strip()
         expected_output = 5
         self.assertEqual(expected_output, solve_part_one(puzzle_input))
@@ -109,7 +109,7 @@ class TestAdventOfCode(unittest.TestCase):
             fff: ggg hhh
             ggg: out
             hhh: out
-        """
+            """
         ).strip()
         expected_output = 2
         self.assertEqual(expected_output, solve_part_two(puzzle_input))

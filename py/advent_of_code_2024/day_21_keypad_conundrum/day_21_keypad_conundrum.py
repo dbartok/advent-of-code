@@ -162,7 +162,7 @@ class TestAdventOfCode(unittest.TestCase):
         179A
         456A
         379A
-    """
+        """
     ).strip()
 
     def test_part_one(self):

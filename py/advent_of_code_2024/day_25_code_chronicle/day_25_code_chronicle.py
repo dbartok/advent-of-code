@@ -114,7 +114,7 @@ class TestAdventOfCode(unittest.TestCase):
             #.#..
             #.#.#
             #####
-        """
+            """
         ).strip()
         expected_output = 3
         self.assertEqual(expected_output, solve_part_one(puzzle_input))

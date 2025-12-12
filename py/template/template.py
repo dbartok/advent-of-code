@@ -34,17 +34,19 @@ def main():
 
 
 class TestAdventOfCode(unittest.TestCase):
-    def test_part_one(self):
-        puzzle_input = textwrap.dedent(
-            """
-            test input
+    PUZZLE_INPUT = textwrap.dedent(
         """
-        ).strip()
-        expected_output = "expected output"
-        self.assertEqual(expected_output, solve_part_one(puzzle_input))
+        test input
+        """
+    ).strip()
+
+    def test_part_one(self):
+        expected_output = "expected output for part 1"
+        self.assertEqual(expected_output, solve_part_one(self.PUZZLE_INPUT))
 
     def test_part_two(self):
-        pass
+        expected_output = "expected output for part 2"
+        self.assertEqual(expected_output, solve_part_two(self.PUZZLE_INPUT))
 
 
 if __name__ == "__main__":

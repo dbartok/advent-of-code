@@ -93,8 +93,8 @@ class GardenPlotPlanner:
                 neighbor_position
                 for neighbor_position in self._get_neighbor_positions(position)
                 if self._is_in_bounds(neighbor_position)
-                and neighbor_position not in self._visited
-                and self._get_plant_at(neighbor_position) == plant_type
+                   and neighbor_position not in self._visited
+                   and self._get_plant_at(neighbor_position) == plant_type
             ]
 
             for neighbor_position in valid_neighbor_positions:
@@ -148,7 +148,7 @@ class GardenPlotPlannerWithDiscount(GardenPlotPlanner):
         for position in region:
             neighbor_position = position + direction
             if not self._is_in_bounds(neighbor_position) or self._get_plant_at(
-                neighbor_position
+                    neighbor_position
             ) != self._get_plant_at(position):
                 edge_positions.add(neighbor_position)
 
@@ -207,7 +207,7 @@ class TestAdventOfCode(unittest.TestCase):
         MIIIIIJJEE
         MIIISIJEEE
         MMMISSJEEE
-    """
+        """
     ).strip()
 
     def test_part_one(self):

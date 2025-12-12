@@ -63,13 +63,13 @@ class AntennaMap:
                 [
                     (antinode_position.x, antinode_position.y)
                     for antinode_position in self._calculate_antinode_positions(
-                        antenna1_position, antenna2_position
-                    )
+                    antenna1_position, antenna2_position
+                )
                 ]
             )
             for antenna1_position, antenna2_position in itertools.combinations(
-                positions, 2
-            )
+            positions, 2
+        )
         ]
 
     def _calculate_antinode_positions(self, antenna1_position, antenna2_position):
@@ -104,7 +104,7 @@ class ResonantAntennaMap(AntennaMap):
         delta_multiplier = 0
 
         while self._is_within_bounds(
-            position := start_position + delta * direction * delta_multiplier
+                position := start_position + delta * direction * delta_multiplier
         ):
             antinode_positions.append(position)
             delta_multiplier += 1
@@ -138,7 +138,7 @@ class TestAdventOfCode(unittest.TestCase):
         .........A..
         ............
         ............
-    """
+        """
     ).strip()
 
     def test_part_one(self):

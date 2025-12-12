@@ -71,7 +71,7 @@ def run_reverse_engineered_program(register_a):
 
         # Instruction: 7, 5
         # cdv - Store A // 2^B in register C
-        c = a // (2**b)
+        c = a // (2 ** b)
 
         # Instruction: 4, 5
         # bxc - XOR register B with register C
@@ -152,7 +152,7 @@ class ThreeBitComputer:
     # adv instruction (opcode 0)
     def _adv(self, operand):
         operand = self._resolve_combo_operand(operand)
-        denominator = 2**operand
+        denominator = 2 ** operand
         self.register_a //= denominator
 
     # bxl instruction (opcode 1)
@@ -182,13 +182,13 @@ class ThreeBitComputer:
     # bdv instruction (opcode 6)
     def _bdv(self, operand):
         operand = self._resolve_combo_operand(operand)
-        denominator = 2**operand
+        denominator = 2 ** operand
         self.register_b = self.register_a // denominator
 
     # cdv instruction (opcode 7)
     def _cdv(self, operand):
         operand = self._resolve_combo_operand(operand)
-        denominator = 2**operand
+        denominator = 2 ** operand
         self.register_c = self.register_a // denominator
 
     def _resolve_combo_operand(self, operand):
@@ -222,7 +222,7 @@ class TestAdventOfCode(unittest.TestCase):
             Register C: 0
 
             Program: 0,1,5,4,3,0
-        """
+            """
         ).strip()
         expected_output = "4,6,3,5,6,3,5,2,1,0"
         self.assertEqual(expected_output, solve_part_one(puzzle_input))

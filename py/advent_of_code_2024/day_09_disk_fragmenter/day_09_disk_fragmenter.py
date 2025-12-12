@@ -117,7 +117,7 @@ class WholeFileDiskCompactor(DiskCompactor):
     def _move_file_id_if_possible(self, file_id):
         file_size = self._file_sizes[file_id]
         num_extra_spaces_before_file = (
-            self._file_ids_in_new_order.index(file_id) - file_id
+                self._file_ids_in_new_order.index(file_id) - file_id
         )
         file_index_adjusted_with_extra_spaces = file_id + num_extra_spaces_before_file
         # Try to find a span of free space that can fit the current file
@@ -128,9 +128,9 @@ class WholeFileDiskCompactor(DiskCompactor):
             if space_size >= file_size:
                 # Adjust spaces at origin of move
                 combined_space_size = (
-                    self._space_sizes[file_index_adjusted_with_extra_spaces - 1]
-                    + file_size
-                    + self._space_sizes[file_index_adjusted_with_extra_spaces]
+                        self._space_sizes[file_index_adjusted_with_extra_spaces - 1]
+                        + file_size
+                        + self._space_sizes[file_index_adjusted_with_extra_spaces]
                 )
                 del self._space_sizes[file_index_adjusted_with_extra_spaces]
                 self._space_sizes[file_index_adjusted_with_extra_spaces - 1] = (
@@ -163,7 +163,7 @@ class TestAdventOfCode(unittest.TestCase):
     PUZZLE_INPUT = textwrap.dedent(
         """
         2333133121414131402
-    """
+        """
     ).strip()
 
     def test_part_one(self):

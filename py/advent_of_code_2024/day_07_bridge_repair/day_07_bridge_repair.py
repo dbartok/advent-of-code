@@ -56,11 +56,11 @@ class CalibrationEquationSolver:
             )
 
             if any(
-                CalibrationEquationSolver._evaluate_expression(
-                    numbers, operator_combination
-                )
-                == test_value
-                for operator_combination in operator_combinations
+                    CalibrationEquationSolver._evaluate_expression(
+                        numbers, operator_combination
+                    )
+                    == test_value
+                    for operator_combination in operator_combinations
             ):
                 sum_of_valid_test_values += test_value
 
@@ -106,7 +106,7 @@ class TestAdventOfCode(unittest.TestCase):
         192: 17 8 14
         21037: 9 7 18 13
         292: 11 6 16 20
-    """
+        """
     ).strip()
 
     def test_part_one(self):

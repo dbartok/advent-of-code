@@ -75,9 +75,9 @@ class TopographicMap:
             for delta_x, delta_y in [(-1, 0), (1, 0), (0, -1), (0, 1)]:
                 new_x, new_y = x + delta_x, y + delta_y
                 if (
-                    self._is_within_bounds(new_x, new_y)
-                    and (new_x, new_y) not in trail_path
-                    and self._grid[new_y][new_x] == self._grid[y][x] + 1
+                        self._is_within_bounds(new_x, new_y)
+                        and (new_x, new_y) not in trail_path
+                        and self._grid[new_y][new_x] == self._grid[y][x] + 1
                 ):
                     new_trail_path = trail_path.copy()
                     new_trail_path.add((new_x, new_y))
@@ -117,7 +117,7 @@ class TestAdventOfCode(unittest.TestCase):
         32019012
         01329801
         10456732
-    """
+        """
     ).strip()
 
     def test_part_one(self):

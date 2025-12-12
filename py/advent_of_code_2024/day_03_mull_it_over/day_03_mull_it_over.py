@@ -72,7 +72,7 @@ class TestAdventOfCode(unittest.TestCase):
         puzzle_input = textwrap.dedent(
             """
             xmul(2,4)%&mul[3,7]!@^do_not_mul(5,5)+mul(32,64]then(mul(11,8)mul(8,5))
-        """
+            """
         ).strip()
         expected_output = 161
         self.assertEqual(expected_output, solve_part_one(puzzle_input))
@@ -81,7 +81,7 @@ class TestAdventOfCode(unittest.TestCase):
         puzzle_input = textwrap.dedent(
             """
             xmul(2,4)&mul[3,7]!^don't()_mul(5,5)+mul(32,64](mul(11,8)undo()?mul(8,5))
-        """
+            """
         ).strip()
         expected_output = 48
         self.assertEqual(expected_output, solve_part_two(puzzle_input))

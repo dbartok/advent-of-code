@@ -22,8 +22,8 @@ Vector = HashableVector
 
 
 def solve_part_one(
-    puzzle_input,
-    required_improvement_via_cheating=REAL_INPUT_REQUIRED_IMPROVEMENT_VIA_CHEATING,
+        puzzle_input,
+        required_improvement_via_cheating=REAL_INPUT_REQUIRED_IMPROVEMENT_VIA_CHEATING,
 ):
     """
     Solve part one of the Advent of Code puzzle.
@@ -39,8 +39,8 @@ def solve_part_one(
 
 
 def solve_part_two(
-    puzzle_input,
-    required_improvement_via_cheating=REAL_INPUT_REQUIRED_IMPROVEMENT_VIA_CHEATING,
+        puzzle_input,
+        required_improvement_via_cheating=REAL_INPUT_REQUIRED_IMPROVEMENT_VIA_CHEATING,
 ):
     """
     Solve part two of the Advent of Code puzzle.
@@ -94,9 +94,9 @@ class RaceTrack:
     def _is_valid_position(self, position):
         x, y = int(position.x), int(position.y)
         return (
-            0 <= x < len(self._grid[0])
-            and 0 <= y < len(self._grid)
-            and self._grid[y][x] != "#"
+                0 <= x < len(self._grid[0])
+                and 0 <= y < len(self._grid)
+                and self._grid[y][x] != "#"
         )
 
     def _get_distances_from_position(self, start_position):
@@ -155,15 +155,15 @@ class RaceTrack:
         return improvement >= self._required_improvement_via_cheating
 
     def _calculate_distance_after_cheating(
-        self, cheat_start_position, cheat_end_position
+            self, cheat_start_position, cheat_end_position
     ):
         cheat_distance = abs(cheat_end_position.x - cheat_start_position.x) + abs(
             cheat_end_position.y - cheat_start_position.y
         )
         return (
-            self._distances_from_start[cheat_start_position]
-            + cheat_distance
-            + self._distances_from_end[cheat_end_position]
+                self._distances_from_start[cheat_start_position]
+                + cheat_distance
+                + self._distances_from_end[cheat_end_position]
         )
 
 
@@ -196,7 +196,7 @@ class TestAdventOfCode(unittest.TestCase):
         #.#.#.#.#.#.###
         #...#...#...###
         ###############
-    """
+        """
     ).strip()
 
     def test_part_one(self):

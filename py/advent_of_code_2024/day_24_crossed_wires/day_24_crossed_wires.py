@@ -24,8 +24,8 @@ def solve_part_one(puzzle_input):
     for wire_id in sorted(output_id_to_element.keys()):
         if wire_id.startswith("z"):
             result += (
-                output_id_to_element[wire_id].evaluate(output_id_to_element)
-                * multiplier
+                    output_id_to_element[wire_id].evaluate(output_id_to_element)
+                    * multiplier
             )
             multiplier <<= 1  # Moving left in the binary representation
 
@@ -189,9 +189,9 @@ class CircuitVisualizer:
 
         # The inputs to z_n should be an XOR gate and an OR gate
         if (
-            not isinstance(input1, Gate)
-            or not isinstance(input2, Gate)
-            or {input1.operation, input2.operation} != {"XOR", "OR"}
+                not isinstance(input1, Gate)
+                or not isinstance(input2, Gate)
+                or {input1.operation, input2.operation} != {"XOR", "OR"}
         ):
             return False
 
@@ -260,7 +260,7 @@ class TestAdventOfCode(unittest.TestCase):
             hwm AND bqk -> z03
             tgd XOR rvg -> z12
             tnw OR pbm -> gnj
-        """
+            """
         ).strip()
         expected_output = 2024
         self.assertEqual(expected_output, solve_part_one(puzzle_input))

@@ -84,8 +84,8 @@ class ReindeerMaze:
             # Avoid revisiting the same state if a better score was already found
             # We explicitly continue if another equal score was found so that we identify all best paths
             if (
-                current_state in state_to_best_score_so_far
-                and state_to_best_score_so_far[current_state] < current_score
+                    current_state in state_to_best_score_so_far
+                    and state_to_best_score_so_far[current_state] < current_score
             ):
                 continue
             state_to_best_score_so_far[current_state] = current_score
@@ -103,7 +103,7 @@ class ReindeerMaze:
 
             # Move forward
             forward_position = (
-                current_position + self.DIRECTIONS[current_direction_index]
+                    current_position + self.DIRECTIONS[current_direction_index]
             )
             if self._grid[int(forward_position.y)][int(forward_position.x)] != "#":
                 heappush(
@@ -173,7 +173,7 @@ class TestAdventOfCode(unittest.TestCase):
         #.###.#.#.#.#.#
         #S..#.....#...#
         ###############
-    """
+        """
     ).strip()
 
     SECOND_EXAMPLE = textwrap.dedent(
@@ -195,7 +195,7 @@ class TestAdventOfCode(unittest.TestCase):
         #.#.#.#########.#
         #S#.............#
         #################
-    """
+        """
     ).strip()
 
     def test_part_one_first_example(self):

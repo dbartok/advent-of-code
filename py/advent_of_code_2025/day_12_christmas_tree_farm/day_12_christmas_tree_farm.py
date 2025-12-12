@@ -73,7 +73,7 @@ class TestAdventOfCode(unittest.TestCase):
             12x5: 1 0 1 0 2 2
             12x5: 1 0 1 0 3 2
             4x4: 1 0 0 0 0 0
-        """
+            """
         ).strip()
         expected_output = 1
         self.assertEqual(expected_output, solve_part_one(puzzle_input))

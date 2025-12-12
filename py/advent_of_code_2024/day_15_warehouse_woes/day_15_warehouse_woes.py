@@ -106,8 +106,8 @@ class WarehouseRobot:
         boxes_pushed = []
 
         while (
-            potential_box_position not in self._wall_positions
-            and potential_box_position in self._box_positions
+                potential_box_position not in self._wall_positions
+                and potential_box_position in self._box_positions
         ):
             boxes_pushed.append(deepcopy(potential_box_position))
             potential_box_position += direction
@@ -177,7 +177,7 @@ class WideWareHouseRobot(WarehouseRobot):
             1,
         ]:  # 0 for the left side of the box, 1 for the right side of the box
             potential_pushed_box_position = (
-                self._robot_position + direction - Vector(offset, 0)
+                    self._robot_position + direction - Vector(offset, 0)
             )
             if potential_pushed_box_position in self._box_positions:
                 boxes_to_process_queue.append(potential_pushed_box_position)
@@ -256,7 +256,7 @@ class TestAdventOfCode(unittest.TestCase):
         <><^^>^^^<><vvvvv^v<v<<>^v<v>v<<^><<><<><<<^^<<<^<<>><<><^^^>^^<>^>v<>
         ^^>vv<^v^v<vv>^<><v<^v>^^^>>>^^vvv^>vvv<>>>^<^>>>>>^<<^v>^vvv<>^<><<v>
         v^^>>><<^^<>>^v^<v^vv<>v^<<>^<^v^v><^<<<><<^<v><v<>vv>>v><v^<vv<>v^<<^
-            """
+        """
     ).strip()
 
     def test_part_one(self):

@@ -21,9 +21,9 @@ Vector = HashableVector
 
 
 def solve_part_one(
-    puzzle_input,
-    grid_size=REAL_INPUT_GRID_SIZE,
-    num_byte_falls_to_simulate=REAL_INPUT_NUM_BYTE_FALLS_TO_SIMULATE,
+        puzzle_input,
+        grid_size=REAL_INPUT_GRID_SIZE,
+        num_byte_falls_to_simulate=REAL_INPUT_NUM_BYTE_FALLS_TO_SIMULATE,
 ):
     """
     Solve part one of the Advent of Code puzzle.
@@ -113,9 +113,9 @@ class MemoryGridTraverser:
 
     def _is_valid_position(self, position):
         return (
-            0 <= position.x < self._grid_size
-            and 0 <= position.y < self._grid_size
-            and position not in self._corrupted_positions
+                0 <= position.x < self._grid_size
+                and 0 <= position.y < self._grid_size
+                and position not in self._corrupted_positions
         )
 
 
@@ -163,7 +163,7 @@ class TestAdventOfCode(unittest.TestCase):
         0,5
         1,6
         2,0
-    """
+        """
     ).strip()
 
     def test_part_one(self):

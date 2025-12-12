@@ -70,7 +70,7 @@ class TestAdventOfCode(unittest.TestCase):
         2,5
         2,3
         7,3
-    """
+        """
     ).strip()
 
     def test_part_one(self):

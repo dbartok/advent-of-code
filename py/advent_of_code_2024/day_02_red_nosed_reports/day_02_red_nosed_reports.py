@@ -37,7 +37,7 @@ def is_safe(report):
 
 def is_safe_with_problem_dampener(report):
     reports_with_one_element_removed = [
-        report[:i] + report[i + 1 :] for i in range(len(report))
+        report[:i] + report[i + 1:] for i in range(len(report))
     ]
     return any(is_safe(report) for report in reports_with_one_element_removed)
 
@@ -62,7 +62,7 @@ class TestAdventOfCode(unittest.TestCase):
         1 3 2 4 5
         8 6 4 4 1
         1 3 6 7 9
-    """
+        """
     ).strip()
 
     def test_part_one(self):

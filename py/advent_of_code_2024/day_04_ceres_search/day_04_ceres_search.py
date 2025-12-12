@@ -100,9 +100,9 @@ class XShapeWordSearch(WordSearch):
             corner_characters = [top_left, top_right, bottom_left, bottom_right]
 
             if (
-                corner_characters.count(start_char) == 2
-                and corner_characters.count(end_char) == 2
-                and top_left != bottom_right
+                    corner_characters.count(start_char) == 2
+                    and corner_characters.count(end_char) == 2
+                    and top_left != bottom_right
             ):
                 count += 1
 
@@ -123,16 +123,16 @@ def main():
 class TestAdventOfCode(unittest.TestCase):
     PUZZLE_INPUT = textwrap.dedent(
         """
-            MMMSXXMASM
-            MSAMXMSMSA
-            AMXSXMAAMM
-            MSAMASMSMX
-            XMASAMXAMM
-            XXAMMXXAMA
-            SMSMSASXSS
-            SAXAMASAAA
-            MAMMMXMMMM
-            MXMXAXMASX
+        MMMSXXMASM
+        MSAMXMSMSA
+        AMXSXMAAMM
+        MSAMASMSMX
+        XMASAMXAMM
+        XXAMMXXAMA
+        SMSMSASXSS
+        SAXAMASAAA
+        MAMMMXMMMM
+        MXMXAXMASX
         """
     ).strip()
 

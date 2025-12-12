@@ -54,7 +54,7 @@ class TowelDesigner:
         # Dynamic Programming approach to count how many ways the design can be formed
         design_length = len(design)
         ways = [0] * (
-            design_length + 1
+                design_length + 1
         )  # ways[i] is the number of ways to form design[:i]
         ways[0] = 1  # Base case: empty design can always be formed in one way
 
@@ -62,8 +62,8 @@ class TowelDesigner:
         for end_index in range(1, design_length + 1):
             for start_index in range(end_index):
                 if (
-                    ways[start_index] > 0
-                    and design[start_index:end_index] in self._available_patterns
+                        ways[start_index] > 0
+                        and design[start_index:end_index] in self._available_patterns
                 ):
                     ways[end_index] += ways[start_index]
 
@@ -94,7 +94,7 @@ class TestAdventOfCode(unittest.TestCase):
         bwurrg
         brgr
         bbrgwb
-    """
+        """
     ).strip()
 
     def test_part_one(self):

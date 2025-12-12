@@ -78,7 +78,7 @@ class TestAdventOfCode(unittest.TestCase):
     PUZZLE_INPUT = textwrap.dedent(
         """
         125 17
-    """
+        """
     ).strip()
 
     def test_part_one(self):

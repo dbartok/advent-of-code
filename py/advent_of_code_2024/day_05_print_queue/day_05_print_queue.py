@@ -143,7 +143,7 @@ class TestAdventOfCode(unittest.TestCase):
         75,97,47,61,53
         61,13,29
         97,13,75,29,47
-    """
+        """
     ).strip()
 
     def test_part_one(self):

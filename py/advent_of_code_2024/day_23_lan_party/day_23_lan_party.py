@@ -65,13 +65,13 @@ class NetworkMap:
     def _is_triad_connected(self, triad):
         computer1, computer2, computer3 = triad
         return (
-            computer2 in self._node_to_neighbor_nodes[computer1]
-            and computer3 in self._node_to_neighbor_nodes[computer1]
-            and computer3 in self._node_to_neighbor_nodes[computer2]
+                computer2 in self._node_to_neighbor_nodes[computer1]
+                and computer3 in self._node_to_neighbor_nodes[computer1]
+                and computer3 in self._node_to_neighbor_nodes[computer2]
         )
 
     def _find_largest_clique_backtracking(
-        self, current_clique, neighbors_of_current_clique
+            self, current_clique, neighbors_of_current_clique
     ):
         largest_clique = current_clique
 
@@ -86,7 +86,7 @@ class NetworkMap:
                 node
                 for node in neighbors_of_current_clique
                 if node != new_node_in_clique
-                and node in self._node_to_neighbor_nodes[new_node_in_clique]
+                   and node in self._node_to_neighbor_nodes[new_node_in_clique]
             ]
             largest_clique_including_new_node = self._find_largest_clique_backtracking(
                 new_clique, neighbors_of_new_clique
@@ -147,7 +147,7 @@ class TestAdventOfCode(unittest.TestCase):
         wh-qp
         tb-vc
         td-yn
-    """
+        """
     ).strip()
 
     def test_part_one(self):

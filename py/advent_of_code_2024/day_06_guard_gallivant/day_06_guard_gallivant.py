@@ -76,8 +76,8 @@ class GuardPatrolSimulator:
 
             next_position = self._get_next_position()
             if (
-                self._is_within_bounds(next_position)
-                and self._get_element_at(next_position) == "#"
+                    self._is_within_bounds(next_position)
+                    and self._get_element_at(next_position) == "#"
             ):
                 self._turn_right()
             else:
@@ -120,7 +120,7 @@ class GuardPatrolLoopFinder:
                 for y in range(self._height)
                 for x in range(self._width)
                 if Vector(x, y) != start_position
-                and self._has_loop_with_obstacle_at(x, y)
+                   and self._has_loop_with_obstacle_at(x, y)
             ]
         )
 
@@ -156,7 +156,7 @@ class TestAdventOfCode(unittest.TestCase):
         ........#.
         #.........
         ......#...
-    """
+        """
     ).strip()
 
     def test_part_one(self):

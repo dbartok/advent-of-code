@@ -76,12 +76,12 @@ class PriceDeltaCalculator:
         # Create a dictionary where the keys are 4-number sequences of deltas and the values are the final price
         delta_sequence_to_final_price_dict = {}
         for i in range(len(self.deltas) - 3):
-            delta_sequence = tuple(self.deltas[i : i + 4])
+            delta_sequence = tuple(self.deltas[i: i + 4])
             # Each index i in the deltas array corresponds to i + 1 in the prices array, because there is no delta for the first price
             index_conversion_between_deltas_and_prices = 1
             final_price = self.prices[
                 i + 3 + index_conversion_between_deltas_and_prices
-            ]
+                ]
 
             # Track the first occurrence
             if delta_sequence not in delta_sequence_to_final_price_dict:
@@ -141,7 +141,7 @@ class TestAdventOfCode(unittest.TestCase):
             10
             100
             2024
-        """
+            """
         ).strip()
         expected_output = 37327623
         self.assertEqual(expected_output, solve_part_one(puzzle_input))
@@ -153,7 +153,7 @@ class TestAdventOfCode(unittest.TestCase):
             2
             3
             2024
-        """
+            """
         ).strip()
         expected_output = 23
         self.assertEqual(expected_output, solve_part_two(puzzle_input))
